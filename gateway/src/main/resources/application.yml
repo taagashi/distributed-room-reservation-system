@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: reservation-service
+          uri: lb://reservation-service
+          predicates:
+            Path=/api/v1/reservation/**
+
+        - id: employee-service
+          uri: lb://employee-service
+          predicates:
+            Path=/api/v1/employee/**
+
+        - id: room-service
+          uri: lb://room-service
+          predicates:
+            Path=/api/v1/room/**
