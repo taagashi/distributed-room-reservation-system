@@ -1,4 +1,4 @@
-package com.br.thaua.room_service.models;
+package com.br.thaua.room_service.persistence.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

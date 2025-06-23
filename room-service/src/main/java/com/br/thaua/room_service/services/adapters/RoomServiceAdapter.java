@@ -1,13 +1,10 @@
 package com.br.thaua.room_service.services.adapters;
 
-import com.br.thaua.room_service.controllers.dto.RoomRequest;
-import com.br.thaua.room_service.controllers.dto.RoomResponse;
-import com.br.thaua.room_service.mappers.RoomEventMapper;
-import com.br.thaua.room_service.mappers.RoomMapper;
-import com.br.thaua.room_service.messaging.ports.RoomEventPublisherPort;
-import com.br.thaua.room_service.models.RoomEntity;
-import com.br.thaua.room_service.repositories.ports.RoomRepositoryPort;
-import com.br.thaua.room_service.services.ports.RoomServicePort;
+import com.br.thaua.room_service.domain.Room;
+import com.br.thaua.room_service.messaging.mappers.RoomEventMapper;
+import com.br.thaua.room_service.core.messaging.RoomEventPublisherPort;
+import com.br.thaua.room_service.core.repository.RoomRepositoryPort;
+import com.br.thaua.room_service.core.services.RoomServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,33 +14,31 @@ public class RoomServiceAdapter implements RoomServicePort {
     private final RoomEventPublisherPort roomEventPublisherPort;
     private final RoomRepositoryPort roomRepositoryPort;
     private final RoomEventMapper roomEventMapper;
-    private final RoomMapper roomMapper;
 
     @Override
-    public RoomResponse addNewRoom(RoomRequest roomRequest) {
-        RoomEntity roomEntity = roomMapper.map(roomRequest);
-        RoomEntity saved = roomRepositoryPort.save(roomEntity);
+    public Room addNewRoom(Room room) {
+        Room saved = roomRepositoryPort.save(room);
 
         roomEventPublisherPort.createdRoom(roomEventMapper.map(saved));
-        return roomMapper.map(saved);
+        return saved;
     }
 
     @Override
-    public RoomResponse updateRoomById(Long id, RoomRequest roomRequest) {
-        RoomEntity roomEntityUpdate = roomRepositoryPort.findById(id);
+    public Room updateRoomById(Long id, Room room) {
+        Room roomUpdate = roomRepositoryPort.findById(id);
 
-        roomEntityUpdate.setCapacity(roomRequest.capacity());
-        roomEntityUpdate.setName(roomRequest.name());
+        roomUpdate.setCapacity(room.getCapacity());
+        roomUpdate.setName(room.getName());
 
-        RoomEntity updated = roomRepositoryPort.update(roomEntityUpdate);
+        Room updated = roomRepositoryPort.update(roomUpdate);
 
         roomEventPublisherPort.updateRoom(roomEventMapper.map(updated));
-        return roomMapper.map(updated);
+        return updated;
     }
 
     @Override
-    public RoomResponse fetchRoomById(Long id) {
-        return roomMapper.map(roomRepositoryPort.findById(id));
+    public Room fetchRoomById(Long id) {
+        return roomRepositoryPort.findById(id);
     }
 
     @Override

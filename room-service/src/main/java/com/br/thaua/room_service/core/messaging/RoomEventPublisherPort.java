@@ -1,4 +1,4 @@
-package com.br.thaua.room_service.messaging.ports;
+package com.br.thaua.room_service.core.messaging;
 
 public interface RoomEventPublisherPort {
     void createdRoom(Object payload);
