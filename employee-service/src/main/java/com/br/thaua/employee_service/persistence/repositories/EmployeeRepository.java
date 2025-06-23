@@ -1,6 +1,6 @@
-package com.br.thaua.employee_service.repositories;
+package com.br.thaua.employee_service.persistence.repositories;
 
-import com.br.thaua.employee_service.models.EmployeeEntity;
+import com.br.thaua.employee_service.persistence.models.EmployeeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

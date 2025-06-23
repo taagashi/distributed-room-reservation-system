@@ -1,4 +1,4 @@
-package com.br.thaua.employee_service.models;
+package com.br.thaua.employee_service.persistence.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,9 +15,9 @@ public class EmployeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
+    private String name;
     @Column(unique = true)
     private String email;
     private int age;
-    private String departamento;
+    private String department;
 }

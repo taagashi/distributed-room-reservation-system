@@ -1,13 +1,10 @@
 package com.br.thaua.employee_service.services.adapters;
 
-import com.br.thaua.employee_service.controllers.dto.EmployeeRequest;
-import com.br.thaua.employee_service.controllers.dto.EmployeeResponse;
-import com.br.thaua.employee_service.mappers.EmployeeMapper;
-import com.br.thaua.employee_service.mappers.EmployeeEventMapper;
-import com.br.thaua.employee_service.messaging.ports.EmployeeEventPublisherPort;
-import com.br.thaua.employee_service.models.EmployeeEntity;
-import com.br.thaua.employee_service.repositories.ports.EmployeeRepositoryPort;
-import com.br.thaua.employee_service.services.ports.EmployeeServicePort;
+import com.br.thaua.employee_service.domain.Employee;
+import com.br.thaua.employee_service.messaging.mappers.EmployeeEventMapper;
+import com.br.thaua.employee_service.core.messaging.EmployeeEventPublisherPort;
+import com.br.thaua.employee_service.core.repository.EmployeeRepositoryPort;
+import com.br.thaua.employee_service.core.services.EmployeeServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,55 +14,53 @@ public class EmployeeServiceAdapter implements EmployeeServicePort {
     private final EmployeeEventPublisherPort employeeEventPublisherPort;
     private final EmployeeRepositoryPort employeeRepositoryPort;
     private final EmployeeEventMapper employeeEventMapper;
-    private final EmployeeMapper employeeMapper;
 
     @Override
-    public EmployeeResponse addNewEmployee(EmployeeRequest employeeRequest) {
-        EmployeeEntity employeeEntity = employeeMapper.map(employeeRequest);
-        EmployeeEntity saved = employeeRepositoryPort.save(employeeEntity);
+    public Employee addNewEmployee(Employee employee) {
+        Employee saved = employeeRepositoryPort.save(employee);
 
         employeeEventPublisherPort.createdEmployee(employeeEventMapper.map(saved));
-        return employeeMapper.map(saved);
+        return saved;
     }
 
     @Override
-    public EmployeeResponse updateEmployeeById(Long id, EmployeeRequest employeeRequest) {
-        EmployeeEntity employeeEntityUpdate = employeeRepositoryPort.findById(id);
+    public Employee updateEmployeeById(Long id, Employee employee) {
+        Employee employeeUpdate = employeeRepositoryPort.findById(id);
 
-        employeeEntityUpdate.setNome(employeeRequest.name());
-        employeeEntityUpdate.setEmail(employeeRequest.email());
-        employeeEntityUpdate.setDepartamento(employeeRequest.department());
-        employeeEntityUpdate.setAge(employeeRequest.age());
+        employeeUpdate.setName(employee.getName());
+        employeeUpdate.setEmail(employee.getEmail());
+        employeeUpdate.setDepartment(employee.getDepartment());
+        employeeUpdate.setAge(employee.getAge());
 
-        EmployeeEntity update = employeeRepositoryPort.save(employeeEntityUpdate);
+        Employee update = employeeRepositoryPort.update(employeeUpdate);
 
         employeeEventPublisherPort.updateEmployee(employeeEventMapper.map(update));
-        return employeeMapper.map(update);
+        return update;
     }
 
     @Override
-    public EmployeeResponse updateEmployeeByEmail(String email, EmployeeRequest employeeRequest) {
-        EmployeeEntity employeeEntityUpdate = employeeRepositoryPort.findByEmail(email);
+    public Employee updateEmployeeByEmail(String email, Employee employee) {
+        Employee employeeUpdate = employeeRepositoryPort.findByEmail(email);
 
-        employeeEntityUpdate.setNome(employeeRequest.name());
-        employeeEntityUpdate.setEmail(employeeRequest.email());
-        employeeEntityUpdate.setDepartamento(employeeRequest.department());
-        employeeEntityUpdate.setAge(employeeRequest.age());
+        employeeUpdate.setName(employee.getName());
+        employeeUpdate.setEmail(employee.getEmail());
+        employeeUpdate.setDepartment(employee.getDepartment());
+        employeeUpdate.setAge(employee.getAge());
 
-        EmployeeEntity update = employeeRepositoryPort.update(employeeEntityUpdate);
+        Employee update = employeeRepositoryPort.update(employeeUpdate);
 
         employeeEventPublisherPort.updateEmployee(employeeEventMapper.map(update));
-        return employeeMapper.map(update);
+        return update;
     }
 
     @Override
-    public EmployeeResponse fetchEmployeeById(Long id) {
-        return employeeMapper.map(employeeRepositoryPort.findById(id));
+    public Employee fetchEmployeeById(Long id) {
+        return employeeRepositoryPort.findById(id);
     }
 
     @Override
-    public EmployeeResponse fetchEmployeeByEmail(String email) {
-        return employeeMapper.map(employeeRepositoryPort.findByEmail(email));
+    public Employee fetchEmployeeByEmail(String email) {
+        return employeeRepositoryPort.findByEmail(email);
     }
 
     @Override
