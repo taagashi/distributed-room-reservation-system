@@ -1,4 +1,4 @@
-package com.br.thaua.reservation_service.config;
+package com.br.thaua.reservation_service.restClient.config;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

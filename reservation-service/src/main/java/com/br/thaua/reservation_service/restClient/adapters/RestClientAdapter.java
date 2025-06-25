@@ -1,4 +1,4 @@
-package com.br.thaua.reservation_service.restClient;
+package com.br.thaua.reservation_service.restClient.adapters;
 
 import com.br.thaua.reservation_service.core.restClient.RestClientPort;
 import com.br.thaua.reservation_service.domain.Employee;
