@@ -1,6 +1,6 @@
-package com.br.thaua.room_service.messaging.adapters;
+package com.br.thaua.room_service.messaging.adapters.publishers;
 
-import com.br.thaua.room_service.core.messaging.RoomEventPublisherPort;
+import com.br.thaua.room_service.core.messaging.publishers.RoomEventPublisherPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

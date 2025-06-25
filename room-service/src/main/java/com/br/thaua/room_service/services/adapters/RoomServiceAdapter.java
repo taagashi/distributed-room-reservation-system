@@ -2,7 +2,7 @@ package com.br.thaua.room_service.services.adapters;
 
 import com.br.thaua.room_service.domain.Room;
 import com.br.thaua.room_service.messaging.mappers.RoomEventMapper;
-import com.br.thaua.room_service.core.messaging.RoomEventPublisherPort;
+import com.br.thaua.room_service.core.messaging.publishers.RoomEventPublisherPort;
 import com.br.thaua.room_service.core.repository.RoomRepositoryPort;
 import com.br.thaua.room_service.core.services.RoomServicePort;
 import lombok.RequiredArgsConstructor;
