@@ -1,4 +1,4 @@
-package com.br.thaua.room_service.config;
+package com.br.thaua.room_service.messaging.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
