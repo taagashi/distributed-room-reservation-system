@@ -1,6 +1,6 @@
-package com.br.thaua.employee_service.messaging.adapters;
+package com.br.thaua.employee_service.messaging.adapters.publishers;
 
-import com.br.thaua.employee_service.core.messaging.EmployeeEventPublisherPort;
+import com.br.thaua.employee_service.core.messaging.publishers.EmployeeEventPublisherPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

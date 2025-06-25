@@ -2,7 +2,7 @@ package com.br.thaua.employee_service.services.adapters;
 
 import com.br.thaua.employee_service.domain.Employee;
 import com.br.thaua.employee_service.messaging.mappers.EmployeeEventMapper;
-import com.br.thaua.employee_service.core.messaging.EmployeeEventPublisherPort;
+import com.br.thaua.employee_service.core.messaging.publishers.EmployeeEventPublisherPort;
 import com.br.thaua.employee_service.core.repository.EmployeeRepositoryPort;
 import com.br.thaua.employee_service.core.services.EmployeeServicePort;
 import lombok.RequiredArgsConstructor;

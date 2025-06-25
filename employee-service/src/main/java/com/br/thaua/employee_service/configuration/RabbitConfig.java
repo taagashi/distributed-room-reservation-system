@@ -33,6 +33,7 @@ public class RabbitConfig {
         return rabbitTemplate;
     }
 
+    @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }

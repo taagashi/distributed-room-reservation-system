@@ -14,7 +14,6 @@ import lombok.Setter;
 public class Employee {
     private Long id;
     private String name;
-    @Column(unique = true)
     private String email;
     private int age;
     private String department;

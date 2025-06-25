@@ -34,7 +34,7 @@ public class EmployeeController {
             EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.fetchEmployeeByEmail(email));
             return ResponseEntity.ok(employeeResponse);
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/update")
@@ -50,7 +50,7 @@ public class EmployeeController {
             EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.updateEmployeeByEmail(email, employee));
             return ResponseEntity.ok(employeeResponse);
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
@@ -64,7 +64,7 @@ public class EmployeeController {
             employeeServicePort.deleteEmployeeByEmail(email);
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().build();
     }
 
 }

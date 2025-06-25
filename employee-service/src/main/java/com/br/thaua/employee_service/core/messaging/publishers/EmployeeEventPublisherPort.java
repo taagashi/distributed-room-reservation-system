@@ -1,4 +1,4 @@
-package com.br.thaua.employee_service.core.messaging;
+package com.br.thaua.employee_service.core.messaging.publishers;
 
 public interface EmployeeEventPublisherPort {
     void createdEmployee(Object payload);
