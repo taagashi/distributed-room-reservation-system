@@ -1,4 +1,4 @@
-package com.br.thaua.employee_service.configuration;
+package com.br.thaua.employee_service.messaging.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
