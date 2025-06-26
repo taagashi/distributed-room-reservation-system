@@ -1,7 +1,55 @@
 services:
+  reservation-service:
+    build: ./reservation-service
+    container_name: reservation-service
+    depends_on:
+      - eureka
+      - rabbitmq
+      - redis
+      - employee-service
+      - room-service
+      - postgres-reservation
+    ports:
+      - "8081:8081"
+
+
+  employee-service:
+    build: ./employee-service
+    container_name: employee-service
+    depends_on:
+      - eureka
+      - rabbitmq
+      - postgres-employee
+    ports:
+      - "8082:8082"
+  
+  room-service:
+    build: ./room-service
+    container_name: room-service
+    depends_on:
+      - eureka
+      - rabbitmq
+      - postgres-room
+    ports:
+      - "8083:8083"
+
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    depends_on:
+      - eureka
+    ports:
+      - "8080:8080"
+
+  eureka:
+    build: ./eureka
+    container_name: eureka
+    ports:
+      - "8761:8761"
+
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq_service
+    container_name: rabbitmq
 
     environment:
       RABBITMQ_DEFAULT_USER: admin
@@ -12,6 +60,51 @@ services:
 
   redis:
     image: redis
-    container_name: redis_service
+    container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+        - redis_data:/data
+
+  postgres-room:
+    image: postgres
+    container_name: postgres-room
+    environment:
+      POSTGRES_DB: room_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data_room:/var/lib/postgresql/data
+
+
+  postgres-employee:
+    image: postgres
+    container_name: postgres-employee
+    environment:
+      POSTGRES_DB: employee_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data_employee:/var/lib/postgresql/data
+
+  postgres-reservation:
+    image: postgres
+    container_name: postgres-reservation
+    environment:
+      POSTGRES_DB: reservation_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg_data_reservation:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  pg_data_room:
+  pg_data_employee:
+  pg_data_reservation:
