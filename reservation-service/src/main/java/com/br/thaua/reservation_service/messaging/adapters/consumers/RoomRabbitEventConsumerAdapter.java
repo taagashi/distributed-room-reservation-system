@@ -7,6 +7,7 @@ import com.br.thaua.reservation_service.domain.Room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class RoomRabbitEventConsumerAdapter implements RoomEventConsumerPort {
         roomCachePort.putCacheRoom(room);
     }
 
+    @Transactional
     @RabbitListener(queues = "room.deleted.queue")
     @Override
     public void fetchRoomIdDeletedForMessaging(Long roomId) {
