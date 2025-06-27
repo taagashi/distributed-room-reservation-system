@@ -98,9 +98,9 @@ docker-compose up --build
   - `employee.deleted`
 - Endpoints:
   - `POST /api/v1/employee`
-  - `GET /api/v1/employee?id=... | &email=...`
-  - `PUT /api/v1/employee/update`
-  - `DELETE /api/v1/employee/delete`
+  - `GET /api/v1/employee/{id}`
+  - `PUT /api/v1/employee/update/{id}`
+  - `DELETE /api/v1/employee/delete/{id}`
 
 ---
 
