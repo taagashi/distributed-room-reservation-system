@@ -2,6 +2,24 @@ services:
   reservation-service:
     build: ./reservation-service
     container_name: reservation-service
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka
+      SPRING_DATASOURCE_RESERVATION_URL: jdbc:postgresql://postgres-reservation:5432/reservation_db
+      SPRING_SERVICES_USERNAME: admin
+      SPRING_SERVICES_PASSWORD: admin123
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      ROUTING_KEY_EMPLOYEE_CREATED: employee.created
+      ROUTING_KEY_EMPLOYEE_UPDATED: employee.update
+      ROUTING_KEY_EMPLOYEE_DELETED: employee.deleted
+      EXCHANGE_EMPLOYEE_NAME: employee.exchange
+      ROUTING_KEY_ROOM_CREATED: room.created
+      ROUTING_KEY_ROOM_UPDATED: room.update
+      ROUTING_KEY_ROOM_DELETED: room.deleted
+      EXCHANGE_ROOM_NAME: room.exchange
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_TIMEOUT: 60000
     depends_on:
       - eureka
       - rabbitmq
@@ -16,6 +34,17 @@ services:
   employee-service:
     build: ./employee-service
     container_name: employee-service
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka
+      SPRING_DATASOURCE_EMPLOYEE_URL: jdbc:postgresql://postgres-employee:5432/employee_db
+      SPRING_SERVICES_USERNAME: admin
+      SPRING_SERVICES_PASSWORD: admin123
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      ROUTING_KEY_EMPLOYEE_CREATED: employee.created
+      ROUTING_KEY_EMPLOYEE_UPDATED: employee.update
+      ROUTING_KEY_EMPLOYEE_DELETED: employee.deleted
+      EXCHANGE_EMPLOYEE_NAME: employee.exchange
     depends_on:
       - eureka
       - rabbitmq
@@ -26,6 +55,17 @@ services:
   room-service:
     build: ./room-service
     container_name: room-service
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka
+      SPRING_DATASOURCE_ROOM_URL: jdbc:postgresql://postgres-room:5432/room_db
+      SPRING_SERVICES_USERNAME: admin
+      SPRING_SERVICES_PASSWORD: admin123
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      ROUTING_KEY_ROOM_CREATED: room.created
+      ROUTING_KEY_ROOM_UPDATED: room.update
+      ROUTING_KEY_ROOM_DELETED: room.deleted
+      EXCHANGE_ROOM_NAME: room.exchange
     depends_on:
       - eureka
       - rabbitmq
@@ -36,6 +76,8 @@ services:
   gateway:
     build: ./gateway
     container_name: gateway
+    environment:
+      EUREKA_URL: http://eureka:8761/eureka
     depends_on:
       - eureka
     ports:
