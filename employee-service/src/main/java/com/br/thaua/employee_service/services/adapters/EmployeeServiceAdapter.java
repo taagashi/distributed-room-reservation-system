@@ -39,28 +39,8 @@ public class EmployeeServiceAdapter implements EmployeeServicePort {
     }
 
     @Override
-    public Employee updateEmployeeByEmail(String email, Employee employee) {
-        Employee employeeUpdate = employeeRepositoryPort.findByEmail(email);
-
-        employeeUpdate.setName(employee.getName());
-        employeeUpdate.setEmail(employee.getEmail());
-        employeeUpdate.setDepartment(employee.getDepartment());
-        employeeUpdate.setAge(employee.getAge());
-
-        Employee update = employeeRepositoryPort.update(employeeUpdate);
-
-        employeeEventPublisherPort.updateEmployee(employeeEventMapper.map(update));
-        return update;
-    }
-
-    @Override
     public Employee fetchEmployeeById(Long id) {
         return employeeRepositoryPort.findById(id);
-    }
-
-    @Override
-    public Employee fetchEmployeeByEmail(String email) {
-        return employeeRepositoryPort.findByEmail(email);
     }
 
     @Override
@@ -69,9 +49,4 @@ public class EmployeeServiceAdapter implements EmployeeServicePort {
         employeeRepositoryPort.deleteById(id);
     }
 
-    @Override
-    public void deleteEmployeeByEmail(String email) {
-        employeeEventPublisherPort.deletedEmployee(email);
-        employeeRepositoryPort.deleteByEmail(email);
-    }
 }

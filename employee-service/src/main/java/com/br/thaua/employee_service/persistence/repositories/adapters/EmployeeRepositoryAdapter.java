@@ -32,17 +32,8 @@ public class EmployeeRepositoryAdapter implements EmployeeRepositoryPort {
     }
 
     @Override
-    public Employee findByEmail(String email) {
-        return employeeMapper.map(employeeRepository.findByEmail(email));
-    }
-
-    @Override
     public void deleteById(Long id) {
         employeeRepository.deleteById(id);
     }
 
-    @Override
-    public void deleteByEmail(String email) {
-        employeeRepository.deleteByEmail(email);
-    }
 }

@@ -23,47 +23,22 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<EmployeeResponse> fetchEmployeeById(@RequestParam(required = false) Long id, @RequestParam(required = false) String email) {
-        if(id != null) {
-            EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.fetchEmployeeById(id));
-            return ResponseEntity.ok(employeeResponse);
-        }
-
-        if(email != null) {
-            EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.fetchEmployeeByEmail(email));
-            return ResponseEntity.ok(employeeResponse);
-        }
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeResponse> fetchEmployeeById(@PathVariable Long id) {
+        EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.fetchEmployeeById(id));
+        return ResponseEntity.ok(employeeResponse);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<EmployeeResponse> updateEmployeeById(@RequestParam(required = false) Long id, @RequestParam(required = false) String email, @RequestBody EmployeeRequest employeeRequest) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<EmployeeResponse> updateEmployeeById(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
         Employee employee = employeeDtoMapper.map(employeeRequest);
-
-        if(id != null) {
-            EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.updateEmployeeById(id, employee));
-            return ResponseEntity.ok(employeeResponse);
-        }
-
-        if(email != null) {
-            EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.updateEmployeeByEmail(email, employee));
-            return ResponseEntity.ok(employeeResponse);
-        }
-        return ResponseEntity.ok().build();
+        EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.updateEmployeeById(id, employee));
+        return ResponseEntity.ok(employeeResponse);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteEmployeeById(@RequestParam(required = false) Long id, @RequestParam(required = false) String email) {
-        if(id != null) {
-            employeeServicePort.deleteEmployeeById(id);
-            return ResponseEntity.ok().build();
-        }
-
-        if(email != null) {
-            employeeServicePort.deleteEmployeeByEmail(email);
-            return ResponseEntity.ok().build();
-        }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteEmployeeById(@PathVariable Long id) {
+        employeeServicePort.deleteEmployeeById(id);
         return ResponseEntity.ok().build();
     }
 
