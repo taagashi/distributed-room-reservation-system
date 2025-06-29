@@ -16,3 +16,8 @@ spring:
           uri: lb://room-service
           predicates:
             Path=/api/v1/room/**
+
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            Path=/api/v1/auth/**
