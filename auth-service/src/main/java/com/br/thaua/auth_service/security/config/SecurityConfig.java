@@ -1,5 +1,6 @@
 package com.br.thaua.auth_service.security.config;
 
+import com.br.thaua.auth_service.filters.AuthFilter;
 import com.br.thaua.auth_service.security.service.AuthDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;
@@ -28,6 +30,8 @@ import java.util.Base64;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final AuthFilter authFilter;
+
     @Value("${public.key.value}")
     private String publicKey;
 
@@ -58,6 +62,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(FormLoginConfigurer::disable)
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .build();
     }
