@@ -1,10 +1,13 @@
 package com.br.thaua.auth_service.services.adapters;
 
+import com.br.thaua.auth_service.core.messaging.publishers.AuthEventPublisherPort;
 import com.br.thaua.auth_service.core.persistence.AuthRepositoryPort;
 import com.br.thaua.auth_service.core.services.AuthServicePort;
-import com.br.thaua.auth_service.core.token.TokenManager;
+import com.br.thaua.auth_service.core.token.TokenManagerPort;
 import com.br.thaua.auth_service.domain.Auth;
 import com.br.thaua.auth_service.domain.Role;
+import com.br.thaua.auth_service.messaging.dto.AuthEvent;
+import com.br.thaua.auth_service.messaging.mappers.AuthEventMapper;
 import com.br.thaua.auth_service.security.details.AuthDetails;
 import com.br.thaua.auth_service.security.mappers.AuthSecurityMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +26,20 @@ public class AuthServiceAdapter implements AuthServicePort {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final AuthSecurityMapper authSecurityMapper;
-    private final TokenManager tokenManager;
+    private final TokenManagerPort tokenManagerPort;
+    private final AuthEventPublisherPort authEventPublisherPort;
+    private final AuthEventMapper authEventMapper;
 
     @Override
     public String singIn(Auth auth) {
         auth.setPassword(passwordEncoder.encode(auth.getPassword()));
-        auth.setRoles(List.of(Role.EMPLOYEE));
+        auth.setRoles(List.of(Role.EMPLOYEE, Role.ADMIN));
         Auth sing = authRepositoryPort.save(auth);
-        return tokenManager.generateToken(sing);
+
+        String token = tokenManagerPort.generateToken(sing);
+        AuthEvent authEvent = authEventMapper.map(sing);
+        authEventPublisherPort.createdAuth(authEvent);
+        return token;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class AuthServiceAdapter implements AuthServicePort {
         Authentication authentication = new UsernamePasswordAuthenticationToken(auth.getEmail(), auth.getPassword());
         UsernamePasswordAuthenticationToken authenticated = (UsernamePasswordAuthenticationToken) authenticationManager.authenticate(authentication);
         Auth login = authSecurityMapper.map((AuthDetails) authenticated.getPrincipal());
-        return tokenManager.generateToken(login);
+        return tokenManagerPort.generateToken(login);
     }
 
     @Override
@@ -49,7 +58,11 @@ public class AuthServiceAdapter implements AuthServicePort {
         updated.setEmail(auth.getEmail());
         updated.setPassword(passwordEncoder.encode(auth.getPassword()));
         authRepositoryPort.update(updated);
-        return tokenManager.generateToken(updated);
+
+        String token = tokenManagerPort.generateToken(updated);
+        AuthEvent authEvent = authEventMapper.map(updated);
+        authEventPublisherPort.updatedAuth(authEvent);
+        return token;
     }
 
     @Override
@@ -60,6 +73,12 @@ public class AuthServiceAdapter implements AuthServicePort {
     @Override
     public void deleteAuthById(Long id) {
         Auth deleted = authRepositoryPort.findById(id);
+        if(deleted == null) {
+            return;
+        }
+
+        AuthEvent authEvent = authEventMapper.map(deleted);
+        authEventPublisherPort.deletedAuth(authEvent);
         deleted.setRoles(null);
         authRepositoryPort.update(deleted);
         authRepositoryPort.deleteById(id);
