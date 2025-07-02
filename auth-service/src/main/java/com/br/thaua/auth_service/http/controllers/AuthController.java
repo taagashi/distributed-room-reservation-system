@@ -5,9 +5,11 @@ import com.br.thaua.auth_service.domain.Auth;
 import com.br.thaua.auth_service.http.dto.AuthRequestLogin;
 import com.br.thaua.auth_service.http.dto.AuthRequestSingIn;
 import com.br.thaua.auth_service.http.dto.AuthResponse;
+import com.br.thaua.auth_service.http.dto.gateway.AuthGatewayRequest;
 import com.br.thaua.auth_service.http.mappers.AuthDtoMappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,22 +31,29 @@ public class AuthController {
         return ResponseEntity.ok(authServicePort.singIn(auth));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AuthResponse> getAccount(@PathVariable Long id) {
-        AuthResponse authResponse = authDtoMappers.map(authServicePort.fetchAuthById(id));
+    @GetMapping("/account")
+    public ResponseEntity<AuthResponse> getAccount() {
+        AuthGatewayRequest currentUser = extractCurrentUser();
+        AuthResponse authResponse = authDtoMappers.map(authServicePort.fetchAuthById(currentUser.id()));
         return ResponseEntity.ok(authResponse);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateAccount(@PathVariable Long id, @RequestBody AuthRequestSingIn authRequestSingIn) {
-        Auth auth = authDtoMappers.map(authRequestSingIn);
-        return ResponseEntity.ok(authServicePort.updateAuthById(id, auth));
+    @PutMapping("/update")
+    public ResponseEntity<String> updateAccount(@RequestBody AuthRequestSingIn authRequestSingIn) {
+        Auth updated = authDtoMappers.map(authRequestSingIn);
+        AuthGatewayRequest currentUser = extractCurrentUser();
+        return ResponseEntity.ok(authServicePort.updateAuthById(currentUser.id(), updated));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        authServicePort.deleteAuthById(id);
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteAccount() {
+        AuthGatewayRequest authGatewayRequest = extractCurrentUser();
+        authServicePort.deleteAuthById(authGatewayRequest.id());
         return ResponseEntity.ok().build();
+    }
+
+    private AuthGatewayRequest extractCurrentUser() {
+        return (AuthGatewayRequest) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }
