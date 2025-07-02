@@ -1,6 +1,6 @@
 package com.br.thaua.auth_service.token.adapters;
 
-import com.br.thaua.auth_service.core.token.TokenManager;
+import com.br.thaua.auth_service.core.token.TokenManagerPort;
 import com.br.thaua.auth_service.domain.Auth;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class TokenJwtAdapter implements TokenManager {
+public class TokenJwtAdapter implements TokenManagerPort {
     private final PrivateKey privateKey;
 
     public String generateToken(Object payloadData) {
@@ -27,7 +27,7 @@ public class TokenJwtAdapter implements TokenManager {
                 .claims(claims)
                 .subject(auth.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() * 1000 * 60 * 60))
+                .expiration(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
                 .signWith(privateKey)
                 .compact();
     }
