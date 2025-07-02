@@ -1,5 +1,5 @@
 package com.br.thaua.auth_service.core.token;
 
-public interface TokenManager {
+public interface TokenManagerPort {
     String generateToken(Object payloadData);
 }
