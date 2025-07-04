@@ -21,7 +21,7 @@ public interface AuthMapper {
         if(roleList == null) {
             return null;
         }
-        return roleList.stream().map(role -> new RoleEntity(role.getRole(), null)).toList();
+        return roleList.stream().map(role -> new RoleEntity(role.getId(), role.name())).toList();
     }
 
     default List<Role> toDomainRole(List<RoleEntity> roleEntityList) {

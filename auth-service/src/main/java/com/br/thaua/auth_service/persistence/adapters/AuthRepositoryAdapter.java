@@ -5,11 +5,8 @@ import com.br.thaua.auth_service.domain.Auth;
 import com.br.thaua.auth_service.persistence.AuthRepository;
 import com.br.thaua.auth_service.persistence.mappers.AuthMapper;
 import com.br.thaua.auth_service.persistence.models.AuthEntity;
-import com.br.thaua.auth_service.persistence.models.RoleEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
