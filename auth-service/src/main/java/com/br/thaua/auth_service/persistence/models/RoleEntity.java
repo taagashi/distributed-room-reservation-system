@@ -15,8 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoleEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String role;
-
-    @ManyToMany(mappedBy = "roles")
-    private List<AuthEntity> authEntity;
 }
