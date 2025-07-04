@@ -33,7 +33,7 @@ public class AuthServiceAdapter implements AuthServicePort {
     @Override
     public String singIn(Auth auth) {
         auth.setPassword(passwordEncoder.encode(auth.getPassword()));
-        auth.setRoles(List.of(Role.EMPLOYEE, Role.ADMIN));
+        auth.setRoles(List.of(Role.EMPLOYEE));
         Auth sing = authRepositoryPort.save(auth);
 
         String token = tokenManagerPort.generateToken(sing);
@@ -78,9 +78,9 @@ public class AuthServiceAdapter implements AuthServicePort {
         }
 
         AuthEvent authEvent = authEventMapper.map(deleted);
-        authEventPublisherPort.deletedAuth(authEvent);
         deleted.setRoles(null);
         authRepositoryPort.update(deleted);
         authRepositoryPort.deleteById(id);
+        authEventPublisherPort.deletedAuth(authEvent);
     }
 }
