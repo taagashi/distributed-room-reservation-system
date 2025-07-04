@@ -37,9 +37,8 @@ public class AuthFilter extends OncePerRequestFilter {
       String name = request.getHeader("x-user-name");
       String email = request.getHeader("x-user-email");
       String roles = request.getHeader("x-user-roles");
-      String token = request.getHeader("Authorization");
 
-      if(id == null || name == null || email == null || roles == null || token == null) {
+      if(id == null || name == null || email == null || roles == null) {
           filterChain.doFilter(request, response);
           return;
       }
