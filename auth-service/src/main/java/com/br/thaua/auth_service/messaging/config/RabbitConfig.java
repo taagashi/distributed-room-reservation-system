@@ -1,9 +1,6 @@
 package com.br.thaua.auth_service.messaging.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -39,37 +36,8 @@ public class RabbitConfig {
     }
 
     @Bean
-    public DirectExchange directExchange() {
-        return new DirectExchange(exchangeAuth);
+    public TopicExchange directExchange() {
+        return new TopicExchange(exchangeAuth);
     }
 
-    @Bean
-    public Queue deletedAuthQueue() {
-        return new Queue("auth.deleted.queue");
-    }
-
-    @Bean
-    public Queue createdAuthQueue() {
-        return new Queue("auth.created.queue");
-    }
-
-    @Bean
-    public Queue updatedAuthQueue() {
-        return new Queue("auth.updated.queue");
-    }
-
-    @Bean
-    public Binding deletedAuthBinding() {
-        return BindingBuilder.bind(deletedAuthQueue()).to(directExchange()).with(routingKeyDeletedAuth);
-    }
-
-    @Bean
-    public Binding createdAuthBinding() {
-        return BindingBuilder.bind(createdAuthQueue()).to(directExchange()).with(routingKeyCreatedAuth);
-    }
-
-    @Bean
-    public Binding updatedAuthBinding() {
-        return BindingBuilder.bind(updatedAuthQueue()).to(directExchange()).with(routingKeyUpdatedAuth);
-    }
 }
