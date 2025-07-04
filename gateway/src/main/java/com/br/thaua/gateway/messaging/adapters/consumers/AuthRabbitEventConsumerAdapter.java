@@ -15,7 +15,7 @@ public class AuthRabbitEventConsumerAdapter implements AuthEventConsumerPort {
     private final GatewayCachePort gatewayCachePort;
     private final AuthEventMapper authEventMapper;
 
-    @RabbitListener(queues = {"auth.deleted.queue"})
+    @RabbitListener(queues = {"gateway.auth.deleted.queue"})
     @Override
     public void fetchAuthForMessage(AuthEvent authEvent) {
         gatewayCachePort.putCacheGateway("revoked:" + authEvent.id(), authEvent);
