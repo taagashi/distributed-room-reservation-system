@@ -11,6 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Room {
     private Long id;
-    private String name;
-    private int capacity;
+    private Integer roomNumber;
 }
