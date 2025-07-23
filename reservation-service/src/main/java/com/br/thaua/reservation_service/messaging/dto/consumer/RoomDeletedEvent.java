@@ -1,4 +1,4 @@
 package com.br.thaua.reservation_service.messaging.dto;
 
-public record AuthUpdatedEvent() {
+public record RoomDeletedEvent(Long id) {
 }

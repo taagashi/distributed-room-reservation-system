@@ -1,4 +1,3 @@
 package com.br.thaua.reservation_service.messaging.dto;
 
-public record AuthEvent() {
-}
+public record RoomEvent(Long id, Integer roomNumber) {}
