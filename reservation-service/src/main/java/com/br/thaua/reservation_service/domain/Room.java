@@ -12,4 +12,5 @@ import lombok.Setter;
 public class Room {
     private Long id;
     private Integer roomNumber;
+    private int capacity;
 }
