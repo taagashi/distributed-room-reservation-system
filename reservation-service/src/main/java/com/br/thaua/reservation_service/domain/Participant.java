@@ -13,5 +13,5 @@ public class Participant {
     private String email;
     private TypeParticipant typeParticipant;
     private Reservation reservation;
-    private Boolean cheackin;
+    private boolean cheackin;
 }
