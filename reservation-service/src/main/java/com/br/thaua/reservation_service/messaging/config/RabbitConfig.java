@@ -1,42 +1,39 @@
 package com.br.thaua.reservation_service.messaging.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-    @Value("${routing.key.employee.created}")
-    private String routingKeyEmployeeCreated;
-
-    @Value("${routing.key.employee.update}")
-    private String routingKeyEmployeeUpdate;
-
-    @Value("${routing.key.employee.deleted}")
-    private String routingKeyEmployeeDeleted;
-
-    @Value("${exchange.employee.name}")
-    private String exchangeEmployeeName;
-
-    @Value("${routing.key.room.created}")
-    private String routingKeyRoomCreated;
-
-    @Value("${routing.key.room.update}")
-    private String routingKeyRoomUpdate;
-
-    @Value("${routing.key.room.deleted}")
-    private String routingKeyRoomDeleted;
+    @Value("${exchange.auth.name}")
+    private String exchangeAuth;
 
     @Value("${exchange.room.name}")
-    private String exchangeRoomName;
+    private String exchangeRoom;
+
+    @Value("${exchange.reservation.name}")
+    private String exchangeReservation;
+
+    @Value("${routing.key.reservation}")
+    private String routingKeyReservation;
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+
+        rabbitTemplate.setExchange(exchangeReservation);
+        rabbitTemplate.setRoutingKey(routingKeyReservation);
+        rabbitTemplate.setMessageConverter(messageConverterJson());
+        return rabbitTemplate;
+    }
 
     @Bean
     public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
@@ -48,78 +45,42 @@ public class RabbitConfig {
 
     @Bean
     public MessageConverter messageConverter() {
+        return new SimpleMessageConverter();
+    }
+
+    @Bean
+    public MessageConverter messageConverterJson() {
         return new Jackson2JsonMessageConverter();
     }
 
-
     @Bean
-    public DirectExchange directEmployeeExchange() {
-        return new DirectExchange(exchangeEmployeeName);
+    public TopicExchange topicAuthExchange() {
+        return new TopicExchange(exchangeAuth);
     }
 
     @Bean
-    public Queue createdEmployeeQueue() {
-        return new Queue("employee.created.queue");
+    public Queue authQueue() {
+        return new Queue("reservation.auth.queue");
     }
 
     @Bean
-    public Queue updateEmployeeQueue() {
-        return new Queue("employee.update.queue");
+    public Binding authBinding() {
+        return BindingBuilder.bind(authQueue()).to(topicAuthExchange()).with("auth.*");
     }
 
     @Bean
-    public Queue deleteEmployeeQueue() {
-        return new Queue("employee.deleted.queue");
+    public TopicExchange topicRoomExchange() {
+        return new TopicExchange(exchangeRoom);
     }
 
     @Bean
-    public Binding createdEmployeeBinding() {
-        return BindingBuilder.bind(createdEmployeeQueue()).to(directEmployeeExchange()).with(routingKeyEmployeeCreated);
-    }
-
-    @Bean
-    public Binding updateEmployeeBinding() {
-        return BindingBuilder.bind(updateEmployeeQueue()).to(directEmployeeExchange()).with(routingKeyEmployeeUpdate);
-    }
-
-    @Bean
-    public Binding deletedEmployeeBinding() {
-        return BindingBuilder.bind(deleteEmployeeQueue()).to(directEmployeeExchange()).with(routingKeyEmployeeDeleted);
-    }
-
-
-    @Bean
-    public DirectExchange directRoomExchange() {
-        return new DirectExchange(exchangeRoomName);
-    }
-
-    @Bean
-    public Queue createdRoomQueue() {
-        return new Queue("room.created.queue");
-    }
-
-    @Bean
-    public Queue updateRoomQueue() {
-        return new Queue("room.update.queue");
-    }
-
-    @Bean
-    public Queue deletedRoomQueue() {
-        return new Queue("room.deleted.queue");
+    public Queue roomQueue() {
+        return new Queue("reservation.room.queue");
     }
 
     @Bean
     public Binding createdRoomBinding() {
-        return BindingBuilder.bind(createdRoomQueue()).to(directRoomExchange()).with(routingKeyRoomCreated);
+        return BindingBuilder.bind(roomQueue()).to(topicRoomExchange()).with("room.*");
     }
 
-    @Bean
-    public Binding updateRoomBinding() {
-        return BindingBuilder.bind(updateRoomQueue()).to(directRoomExchange()).with(routingKeyRoomUpdate);
-    }
-
-    @Bean
-    public Binding deletedRoomBinding() {
-        return BindingBuilder.bind(deletedRoomQueue()).to(directRoomExchange()).with(routingKeyRoomDeleted);
-    }
 }

@@ -3,8 +3,9 @@ package com.br.thaua.reservation_service.messaging.adapters.consumers;
 import com.br.thaua.reservation_service.core.cache.AuthCachePort;
 import com.br.thaua.reservation_service.core.messaging.consumers.AuthEventConsumerPort;
 import com.br.thaua.reservation_service.core.repository.ParticipantRepositoryPort;
-import com.br.thaua.reservation_service.messaging.dto.AuthEvent;
-import com.br.thaua.reservation_service.messaging.dto.AuthUpdatedEvent;
+import com.br.thaua.reservation_service.domain.AuthEventType;
+import com.br.thaua.reservation_service.messaging.dto.consumer.AuthEventConsumer;
+import com.br.thaua.reservation_service.messaging.dto.consumer.AuthUpdatedEventConsumer;
 import com.br.thaua.reservation_service.messaging.mappers.AuthEventMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,21 +27,21 @@ public class AuthRabbitEventConsumerAdapter implements AuthEventConsumerPort {
     public void consumerAuthEvent(String event) {
         try {
             JsonNode node = fetchJsonNode(event);
-            String eventType = node.get("eventType").asText();
+            AuthEventType eventType = AuthEventType.valueOf(node.get("eventType").asText());
 
             switch (eventType) {
-                case "auth.created":
-                    AuthEvent authCreated = objectMapper.treeToValue(node, AuthEvent.class);
+                case AUTH_CREATED:
+                    AuthEventConsumer authCreated = objectMapper.treeToValue(node, AuthEventConsumer.class);
                     authCreatedEvent(authCreated);
                     break;
 
-                case "auth.updated":
-                    AuthUpdatedEvent authUpdated = objectMapper.treeToValue(node, AuthUpdatedEvent.class);
+                case AUTH_UPDATED:
+                    AuthUpdatedEventConsumer authUpdated = objectMapper.treeToValue(node, AuthUpdatedEventConsumer.class);
                     authUpdatedEvent(authUpdated);
                     break;
 
-                case "auth.deleted":
-                    AuthEvent authDeleted = objectMapper.treeToValue(node, AuthEvent.class);
+                case AUTH_DELETED:
+                    AuthEventConsumer authDeleted = objectMapper.treeToValue(node, AuthEventConsumer.class);
                     authDeletedEvent(authDeleted);
                     break;
             }
@@ -50,18 +51,18 @@ public class AuthRabbitEventConsumerAdapter implements AuthEventConsumerPort {
 
     }
 
-    private void authCreatedEvent(AuthEvent authCreated) {
+    private void authCreatedEvent(AuthEventConsumer authCreated) {
         authCachePort.putCacheAuthEmailKey(authEventMapper.map(authCreated));
     }
 
-    private void authUpdatedEvent(AuthUpdatedEvent authUpdated) {
+    private void authUpdatedEvent(AuthUpdatedEventConsumer authUpdated) {
         authCachePort.evictAuthEmailKey(authUpdated.oldEmail());
         authCachePort.updateCacheAuthEmailKey(authEventMapper.map(authUpdated));
 
         participantRepositoryPort.updateEmailByAuthId(authUpdated.id(), authUpdated.email());
     }
 
-    private void authDeletedEvent(AuthEvent authDeleted) {
+    private void authDeletedEvent(AuthEventConsumer authDeleted) {
         authCachePort.evictAuthEmailKey(authDeleted.email());
 
         participantRepositoryPort.deleteAllByAuthId(authDeleted.id());
