@@ -8,6 +8,8 @@ import com.br.thaua.reservation_service.persistence.models.ReservationEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -23,18 +25,18 @@ public class ReservationRepositoryAdapter implements ReservationRepositoryPort {
     }
 
     @Override
-    public Reservation findById(Long id) {
-        return reservationMapper.map(reservationRepository.findById(id).orElse(null));
-    }
-
-    @Override
     public List<Reservation> findAll() {
-        return reservationRepository.findAll().stream().map(reservationMapper::map).toList();
+        return List.of();
     }
 
     @Override
-    public List<Reservation> findAllByEmployeeId(Long employeeId) {
-        return reservationRepository.findAllByEmployeeId(employeeId).stream().map(reservationMapper::map).toList();
+    public List<Reservation> findAllByDate(LocalDate date) {
+        return List.of();
+    }
+
+    @Override
+    public List<Reservation> findAllByParticipantEntityEmployeeId(Long employeeId) {
+        return List.of();
     }
 
     @Override
@@ -43,12 +45,28 @@ public class ReservationRepositoryAdapter implements ReservationRepositoryPort {
     }
 
     @Override
-    public void deleteAllByEmployeeId(Long employeeId) {
-        reservationRepository.deleteAllByEmployeeId(employeeId);
+    public Reservation findById(Long reservationId) {
+        return reservationMapper.map(reservationRepository.findById(reservationId).orElse(null));
     }
 
     @Override
-    public void deleteAllByRoomId(Long roomId) {
-        reservationRepository.deleteAllByRoomId(roomId);
+    public void deleteAllByRoomId(Long id) {
+
+    }
+
+    @Override
+    public void delete(Reservation reservation) {
+        reservationRepository.delete(reservationMapper.map(reservation));
+    }
+
+    @Override
+    public void updateRoomNumberByRoomId(Long id, Integer roomNumber) {
+
+    }
+
+    @Override
+    public List<Reservation> findAllByRoomIdAndDateAndStartLessThanEqualAndEndGreaterThanEqual(Long roomId, LocalDate date, LocalTime end, LocalTime start) {
+        return reservationRepository.findAllByRoomIdAndDateAndStartLessThanEqualAndEndGreaterThanEqual(
+                roomId, date, end, start).stream().map(reservationMapper::map).toList();
     }
 }

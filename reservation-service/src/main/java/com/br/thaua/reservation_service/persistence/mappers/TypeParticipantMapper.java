@@ -7,10 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TypeParticipantMapper{
-    @Mapping(target = ".", expression = "java(toEntity(typeParticipant))")
-    TypeParticipantEntity map(TypeParticipant typeParticipant);
-
-    default TypeParticipantEntity toEntity(TypeParticipant typeParticipant) {
+    default TypeParticipantEntity map(TypeParticipant typeParticipant) {
         return new TypeParticipantEntity(typeParticipant.getId(), typeParticipant.name());
     }
 }
