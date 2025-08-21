@@ -14,14 +14,14 @@ public class AuthCacheRedisValidatorPortAdapter implements AuthCacheValidatorPor
     private final AuthCachePort authCachePort;
 
     @Override
-    public void validateAuthCache(Long authId, Auth auth) {
+    public Auth validateAuthCache(String email, Auth auth) {
         if(auth == null) {
-            auth = restClientPort.fetchEmployeeById(authId);
+            auth = restClientPort.fetchAuthById(email);
         }
 
         if(auth != null) {
             authCachePort.putCacheAuthEmailKey(auth);
-            return;
+            return auth;
         }
         throw new RuntimeException("Auth not found");
     }

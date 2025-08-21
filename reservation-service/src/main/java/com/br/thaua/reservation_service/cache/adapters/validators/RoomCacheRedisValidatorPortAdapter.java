@@ -14,14 +14,14 @@ public class RoomCacheRedisValidatorPortAdapter implements RoomCacheValidatorPor
     private final RoomCachePort roomCachePort;
 
     @Override
-    public void validateRoomCache(Long roomId, Room room) {
+    public Room validateRoomCache(Long roomId, Room room) {
         if(room == null) {
             room = restClientPort.fetchRoomById(roomId);
         }
 
         if(room != null) {
             roomCachePort.putCacheRoom(room);
-            return;
+            return room;
         }
         throw new RuntimeException("Room not found");
     }

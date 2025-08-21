@@ -20,12 +20,12 @@ public class AuthCacheRedisAdapter implements AuthCachePort {
 
     @Override
     public void putCacheAuthEmailKey(Auth auth) {
-        redisTemplate.opsForValue().set(authKey(auth.getEmail()), auth, Duration.ofMinutes(30));
+        redisTemplate.opsForValue().set(authKey(auth.getEmail()), auth, Duration.ofMinutes(400));
     }
 
     @Override
     public void updateCacheAuthEmailKey(Auth auth) {
-        redisTemplate.opsForValue().set(authKey(auth.getEmail()), auth.getId(), Duration.ofMinutes(30));
+        redisTemplate.opsForValue().set(authKey(auth.getEmail()), auth.getId(), Duration.ofMinutes(400));
     }
 
     @Override
@@ -36,6 +36,4 @@ public class AuthCacheRedisAdapter implements AuthCachePort {
     private String authKey(String authEmail) {
         return "auth:" + authEmail;
     }
-
-    private String authKey(Long id) {return "auth:" + id;}
 }

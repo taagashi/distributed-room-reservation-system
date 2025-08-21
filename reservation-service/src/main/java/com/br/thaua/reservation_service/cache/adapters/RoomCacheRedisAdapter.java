@@ -14,8 +14,8 @@ public class RoomCacheRedisAdapter implements RoomCachePort {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public Room getCacheRoom(String key) {
-        return (Room) redisTemplate.opsForValue().get(key);
+    public Room getCacheRoom(Long key) {
+        return (Room) redisTemplate.opsForValue().get(roomKey(key));
     }
 
     @Override
