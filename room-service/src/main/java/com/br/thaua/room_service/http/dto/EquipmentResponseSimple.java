@@ -1,4 +1,4 @@
 package com.br.thaua.room_service.http.dto;
 
-public class RoomResponseEquipment {
+public class EquipmentResponseSimple {
 }
