@@ -1,57 +1,93 @@
 package com.br.thaua.reservation_service.services.adapters;
 
-import com.br.thaua.reservation_service.core.cache.EmployeeCachePort;
 import com.br.thaua.reservation_service.core.cache.RoomCachePort;
-import com.br.thaua.reservation_service.core.cache.validators.EmployeeCacheValidatorPort;
 import com.br.thaua.reservation_service.core.cache.validators.RoomCacheValidatorPort;
+import com.br.thaua.reservation_service.core.messaging.publishers.ReservationEventPublisherPort;
+import com.br.thaua.reservation_service.core.repository.ParticipantRepositoryPort;
 import com.br.thaua.reservation_service.core.repository.ReservationRepositoryPort;
 import com.br.thaua.reservation_service.core.services.ReservationServicePort;
-import com.br.thaua.reservation_service.domain.Employee;
-import com.br.thaua.reservation_service.domain.Reservation;
-import com.br.thaua.reservation_service.domain.Room;
+import com.br.thaua.reservation_service.domain.*;
+import com.br.thaua.reservation_service.messaging.mappers.ReservationEventMapper;
+import com.br.thaua.reservation_service.services.jobs.JobKeyEnum;
+import com.br.thaua.reservation_service.services.jobs.JobManager;
+import com.br.thaua.reservation_service.services.validators.ReservationValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceAdapter implements ReservationServicePort {
     private final ReservationRepositoryPort reservationRepositoryPort;
-    private final EmployeeCachePort employeeCachePort;
+    private final ParticipantRepositoryPort participantRepositoryPort;
     private final RoomCachePort roomCachePort;
-    private final EmployeeCacheValidatorPort employeeCacheValidatorPort;
     private final RoomCacheValidatorPort roomCacheValidatorPort;
+    private final ReservationEventPublisherPort reservationEventPublisherPort;
+    private final ReservationEventMapper reservationEventMapper;
+    private final JobManager jobManager;
+    private final ReservationValidator reservationValidator;
 
     @Override
-    public Reservation addNewReservation(Reservation reservation) {
-        Employee employee = employeeCachePort.getCacheEmployee(employeeKey(reservation.getEmployeeId()));
-        Room room = roomCachePort.getCacheRoom(roomKey(reservation.getRoomId()));
+    public Reservation addNewReservation(Reservation reservation, Long authId, String email) {
+        reservationValidator.validateDateTimeReservation(reservation.getDate(), reservation.getStart(), reservation.getEnd());
 
-        employeeCacheValidatorPort.validateEmployeeCache(reservation.getEmployeeId(), employee);
-        roomCacheValidatorPort.validateRoomCache(reservation.getRoomId(), room);
+        List<Reservation> reservationExists = reservationRepositoryPort.findAllByRoomIdAndDateAndStartLessThanEqualAndEndGreaterThanEqual(reservation.getRoomId(), reservation.getDate(), reservation.getEnd(), reservation.getStart());
 
-        return reservationRepositoryPort.save(reservation);
-    }
-
-    @Override
-    public Reservation updateReservation(Long id, Reservation reservation) {
-        Reservation updated = reservationRepositoryPort.findById(id);
-
-        if(updated == null) {
-            throw new RuntimeException("Reservation not found");
+        if(!reservationExists.isEmpty()) {
+            throw new RuntimeException("reserva nesse horario");
         }
 
-        Employee employee = employeeCachePort.getCacheEmployee(employeeKey(reservation.getEmployeeId()));
-        Room room = roomCachePort.getCacheRoom(roomKey(reservation.getRoomId()));
+        Room room = roomCachePort.getCacheRoom(reservation.getRoomId());
+        room = roomCacheValidatorPort.validateRoomCache(reservation.getRoomId(), room);
 
-        employeeCacheValidatorPort.validateEmployeeCache(reservation.getEmployeeId(), employee);
-        roomCacheValidatorPort.validateRoomCache(reservation.getRoomId(), room);
+        reservation.setRoomNumber(room.getRoomNumber());
+        Reservation saved =  reservationRepositoryPort.save(reservation);
+        participantRepositoryPort.save(new Participant(null, authId, email, TypeParticipant.HOST, saved, false));
 
-        updated.setEmployeeId(reservation.getEmployeeId());
-        updated.setRoomId(reservation.getRoomId());
-        updated.setReservedAt(reservation.getReservedAt());
-        return reservationRepositoryPort.save(updated);
+        jobManager.scheduleReservation(saved, EventType.RESERVATION_BEGIN);
+        jobManager.scheduleReservation(saved, EventType.RESERVATION_FINISHED);
+        reservationEventPublisherPort.sendToReservationExchange(reservationEventMapper.map(saved, EventType.RESERVATION_CREATED, authId));
+        return saved;
+        }
+
+    @Override
+    public Reservation updateReservation(Long reservationId, Long hostId, Reservation reservation) {
+       reservationValidator.validateDateTimeReservation(reservation.getDate(), reservation.getStart(), reservation.getEnd());
+
+       Reservation updated = reservationRepositoryPort.findById(reservationId);
+
+       if(updated == null) {
+        throw new RuntimeException("Reservation not found");
+       }
+
+       Participant host = participantRepositoryPort.findByAuthIdAndTypeParticipantAndReservation(hostId, TypeParticipant.HOST, updated);
+
+       if(host == null) {
+           throw new RuntimeException("host not found");
+       }
+
+       Room room = roomCachePort.getCacheRoom(reservation.getRoomId());
+//       roomCacheValidatorPort.validateRoomCache(reservation.getRoomId(), room);
+
+       LocalDate oldDate = updated.getDate();
+
+       updated.setRoomId(room.getId());
+       updated.setRoomNumber(room.getRoomNumber());
+       updated.setDate(reservation.getDate());
+       updated.setStart(reservation.getStart());
+       updated.setEnd(reservation.getEnd());
+
+       if(!oldDate.equals(reservation.getDate())) {
+           reservationEventPublisherPort.sendToReservationExchange(reservationEventMapper.map(updated, EventType.RESERVATION_UPDATED, hostId));
+       }
+
+       updated = reservationRepositoryPort.save(updated);
+
+       jobManager.updateScheduler(updated, JobKeyEnum.START_KEY);
+       jobManager.updateScheduler(updated, JobKeyEnum.FINISH_KEY);
+       return updated;
     }
 
     @Override
@@ -65,20 +101,24 @@ public class ReservationServiceAdapter implements ReservationServicePort {
     }
 
     @Override
-    public List<Reservation> fetchAllReservationByEmployee(Long employeeId) {
-        return reservationRepositoryPort.findAllByEmployeeId(employeeId);
+    public List<Reservation> fetchAllReservationByEmployee(Long authId) {
+        return participantRepositoryPort.findAllReservationByAuthId(authId);
     }
 
     @Override
-    public void deleteReservationById(Long id) {
-        reservationRepositoryPort.deleteById(id);
-    }
+    public void deleteReservationById(Long reservationId, Long hostId) {
+        Reservation deleted = reservationRepositoryPort.findById(reservationId);
 
-    private String employeeKey(Long employeeId) {
-        return "employee:" + employeeId;
-    }
+        Participant host = participantRepositoryPort.findByAuthIdAndTypeParticipantAndReservation(hostId, TypeParticipant.HOST, deleted);
 
-    private String roomKey(Long roomKey) {
-        return "room:" + roomKey;
+        if(host == null) {
+            throw new RuntimeException("invalid host");
+        }
+
+        reservationRepositoryPort.delete(deleted);
+        reservationEventPublisherPort.sendToReservationExchange(reservationEventMapper.map(deleted, EventType.RESERVATION_FINISHED, hostId));
+        jobManager.deleteScheduler(reservationId, JobKeyEnum.START_KEY);
+        jobManager.deleteScheduler(reservationId, JobKeyEnum.FINISH_KEY);
+
     }
 }
