@@ -7,10 +7,8 @@ import com.br.thaua.reservation_service.domain.TypeParticipant;
 import com.br.thaua.reservation_service.persistence.ParticipantRepository;
 import com.br.thaua.reservation_service.persistence.mappers.ParticipantMapper;
 import com.br.thaua.reservation_service.persistence.mappers.ReservationMapper;
-import com.br.thaua.reservation_service.persistence.mappers.TypeParticipantMapper;
 import com.br.thaua.reservation_service.persistence.models.ParticipantEntity;
 import com.br.thaua.reservation_service.persistence.models.ReservationEntity;
-import com.br.thaua.reservation_service.persistence.models.TypeParticipantEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,6 @@ public class ParticipantRepositoryAdapter implements ParticipantRepositoryPort {
     private final ParticipantRepository participantRepository;
     private final ParticipantMapper participantMapper;
     private final ReservationMapper reservationMapper;
-    private final TypeParticipantMapper typeParticipantMapper;
 
     @Override
     public Participant save(Participant participant) {
@@ -39,8 +36,7 @@ public class ParticipantRepositoryAdapter implements ParticipantRepositoryPort {
     @Override
     public Participant findByAuthIdAndTypeParticipantAndReservation(Long authId, TypeParticipant typeParticipant, Reservation reservation) {
         ReservationEntity reservationEntity = reservationMapper.map(reservation);
-        TypeParticipantEntity typeParticipantEntity = new TypeParticipantEntity(typeParticipant.getId(), typeParticipant.name());
-        return participantMapper.map(participantRepository.findByAuthIdAndTypeParticipantAndReservation(authId, typeParticipantEntity, reservationEntity));
+        return participantMapper.map(participantRepository.findByAuthIdAndTypeParticipantAndReservation(authId, typeParticipant, reservationEntity));
     }
 
     @Override
@@ -50,7 +46,7 @@ public class ParticipantRepositoryAdapter implements ParticipantRepositoryPort {
 
     @Override
     public Participant findByAuthIdAndTypeParticipantAndReservationId(Long authId, TypeParticipant typeParticipant, Long reservationId) {
-        return participantMapper.map(participantRepository.findByAuthIdAndTypeParticipantAndReservationId(authId, typeParticipantMapper.map(typeParticipant), reservationId));
+        return participantMapper.map(participantRepository.findByAuthIdAndTypeParticipantAndReservationId(authId, typeParticipant, reservationId));
     }
 
     @Override
@@ -61,7 +57,7 @@ public class ParticipantRepositoryAdapter implements ParticipantRepositoryPort {
 
     @Override
     public List<Participant> findAllByTypeParticipantAndReservationId(TypeParticipant typeParticipant, Long reservationId) {
-        List<ParticipantEntity> participants = participantRepository.findAllByTypeParticipantAndReservationId(typeParticipantMapper.map(typeParticipant), reservationId);
+        List<ParticipantEntity> participants = participantRepository.findAllByTypeParticipantAndReservationId(typeParticipant, reservationId);
         return participants.stream().map(participantMapper::map).toList();
     }
 

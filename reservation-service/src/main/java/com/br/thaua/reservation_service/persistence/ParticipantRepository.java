@@ -1,10 +1,8 @@
 package com.br.thaua.reservation_service.persistence;
 
-import com.br.thaua.reservation_service.domain.Participant;
-import com.br.thaua.reservation_service.domain.Reservation;
+import com.br.thaua.reservation_service.domain.TypeParticipant;
 import com.br.thaua.reservation_service.persistence.models.ParticipantEntity;
 import com.br.thaua.reservation_service.persistence.models.ReservationEntity;
-import com.br.thaua.reservation_service.persistence.models.TypeParticipantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -19,7 +17,7 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
             AND p.typeParticipant = ?2
             AND p.reservation = ?3
             """)
-    ParticipantEntity findByAuthIdAndTypeParticipantAndReservation(Long authId, TypeParticipantEntity typeParticipant, ReservationEntity reservationEntity);
+    ParticipantEntity findByAuthIdAndTypeParticipantAndReservation(Long authId, TypeParticipant typeParticipant, ReservationEntity reservationEntity);
 
     @Query("""
             SELECT p FROM ParticipantEntity p
@@ -27,7 +25,7 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
             AND p.typeParticipant = ?2
             AND p.reservation.id = ?3
             """)
-    ParticipantEntity findByAuthIdAndTypeParticipantAndReservationId(Long authId, TypeParticipantEntity typeParticipant, Long reservationId);
+    ParticipantEntity findByAuthIdAndTypeParticipantAndReservationId(Long authId, TypeParticipant typeParticipant, Long reservationId);
 
     @Query("""
             SELECT p FROM ParticipantEntity p
@@ -46,7 +44,7 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
             WHERE p.typeParticipant = ?1
             AND p.reservation.id = ?2
             """)
-    List<ParticipantEntity> findAllByTypeParticipantAndReservationId(TypeParticipantEntity map, Long reservationId);
+    List<ParticipantEntity> findAllByTypeParticipantAndReservationId(TypeParticipant typeParticipant, Long reservationId);
 
     @Query("""
             SELECT p FROM ParticipantEntity p

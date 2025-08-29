@@ -1,5 +1,6 @@
 package com.br.thaua.reservation_service.persistence.models;
 
+import com.br.thaua.reservation_service.domain.TypeParticipant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,8 +19,7 @@ public class ParticipantEntity {
     private Long id;
     private String email;
 
-    @ManyToOne
-    private TypeParticipantEntity typeParticipant;
+    private TypeParticipant typeParticipant;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     private ReservationEntity reservation;

@@ -3,7 +3,6 @@ package com.br.thaua.reservation_service.persistence.mappers;
 import com.br.thaua.reservation_service.domain.Participant;
 import com.br.thaua.reservation_service.domain.TypeParticipant;
 import com.br.thaua.reservation_service.persistence.models.ParticipantEntity;
-import com.br.thaua.reservation_service.persistence.models.TypeParticipantEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

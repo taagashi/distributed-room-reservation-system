@@ -3,8 +3,6 @@ package com.br.thaua.reservation_service.core.repository;
 import com.br.thaua.reservation_service.domain.Participant;
 import com.br.thaua.reservation_service.domain.Reservation;
 import com.br.thaua.reservation_service.domain.TypeParticipant;
-import com.br.thaua.reservation_service.persistence.models.ParticipantEntity;
-import com.br.thaua.reservation_service.persistence.models.TypeParticipantEntity;
 
 import java.util.List;
 
