@@ -1,4 +1,19 @@
 package com.br.thaua.room_service.persistence.models;
 
-public class EquipmentEntity {
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Entity
+@Table(name = "equipment_tb")
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+public class EquipmentEntity extends AbstractEntity{
+    private String name;
 }
