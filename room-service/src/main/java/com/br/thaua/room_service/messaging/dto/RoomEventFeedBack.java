@@ -1,4 +1,9 @@
 package com.br.thaua.room_service.messaging.dto;
 
-public record RoomEventFeedBack() {
+import com.br.thaua.room_service.domain.EventType;
+
+public record RoomEventFeedBack(
+        EventType eventType,
+        Long authId
+) {
 }

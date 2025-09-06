@@ -1,4 +1,6 @@
 package com.br.thaua.room_service.messaging.dto;
 
-public record RoomEventLiked() {
+import com.br.thaua.room_service.domain.EventType;
+
+public record RoomEventLiked(EventType eventType, Long id, int roomNumber, Long authId) {
 }
