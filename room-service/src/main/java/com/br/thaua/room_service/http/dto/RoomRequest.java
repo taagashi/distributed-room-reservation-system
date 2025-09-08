@@ -1,3 +1,7 @@
 package com.br.thaua.room_service.http.dto;
 
-public record RoomRequest(String name, int capacity) {}
+public record RoomRequest(
+        int roomNumber,
+        int capacity,
+        String stat
+) {}

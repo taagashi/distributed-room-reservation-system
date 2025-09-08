@@ -1,4 +1,7 @@
 package com.br.thaua.room_service.http.dto;
 
-public record EquipmentResponse() {
+public record EquipmentResponse(Long id,
+                                String name,
+                                Integer quantity
+) {
 }
