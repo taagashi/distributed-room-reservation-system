@@ -1,10 +1,23 @@
 package com.br.thaua.employee_service.core.services;
 
-import com.br.thaua.employee_service.domain.Employee;
+import com.br.thaua.employee_service.domain.*;
+import com.br.thaua.employee_service.http.dto.FeedBackResponse;
+
+import java.util.List;
 
 public interface EmployeeServicePort {
-    Employee addNewEmployee(Employee employee);
-    Employee updateEmployeeById(Long id, Employee employee);
-    Employee fetchEmployeeById(Long id);
-    void deleteEmployeeById(Long id);
+    Employee addEmployee(Employee employee);
+    void updateEmployee(Employee employee);
+    void increaseEmployeeScore(Long employeeId, int score);
+    void deCreaseEmployeeScore(Long employeeId, int score);
+    void addFavRoom(FavRoom favRoom);
+    void deleteFavRoom(Long roomId);
+    void increaseReservation(ReservationLog reservationLog);
+    void deCreaseReservation(Integer year, Integer moth);
+    void deleteEmployee(Employee employee);
+    FeedBack addFeedBack(FeedBack feedBack, Long authorId, Long receiverId);
+    List<FeedBack> listFeedBacksOfEmployee(Long employeeId);
+    List<FeedBack> listFeedBacksReceived(Long employeeId);
+    FeedBack updateFeedBack(Long feedBackId, FeedBack feedBack);
+    void deleteFeedBack(Long feedBackId, Long userId);
 }
