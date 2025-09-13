@@ -130,7 +130,7 @@ services:
     image: redis
     container_name: redis-reservation
     ports:
-      - "6379:6379"
+      - "6381:6379"
     volumes:
         - redis_reservation_data:/data
 

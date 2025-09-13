@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum TypeParticipant {
-    GUEST(1L),
-    HOST(2L);
-
-    private final Long id;
+    GUEST,
+    HOST
 }
