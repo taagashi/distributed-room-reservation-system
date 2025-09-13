@@ -1,4 +1,4 @@
-package com.br.thaua.employee_service.persistence.repositories.adapters;
+package com.br.thaua.employee_service.persistence.adapters;
 
 import com.br.thaua.employee_service.domain.Employee;
 import com.br.thaua.employee_service.persistence.mappers.EmployeeMapper;
@@ -7,6 +7,8 @@ import com.br.thaua.employee_service.persistence.repositories.EmployeeRepository
 import com.br.thaua.employee_service.core.repository.EmployeeRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,13 +29,28 @@ public class EmployeeRepositoryAdapter implements EmployeeRepositoryPort {
     }
 
     @Override
-    public Employee findById(Long id) {
-        return employeeMapper.map(employeeRepository.findById(id).orElse(null));
+    public void update(Long employeeId, String email) {
+        employeeRepository.update(employeeId, email);
+    }
+
+    @Override
+    public Optional<Employee> findById(Long id) {
+        return employeeRepository.findById(id).map(employeeMapper::map);
     }
 
     @Override
     public void deleteById(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    @Override
+    public void increaseEmployeeScore(Long employeeId, int score) {
+        employeeRepository.increaseEmployeeScore(employeeId, score);
+    }
+
+    @Override
+    public void deCreaseEmployeeScore(Long employeeId, int score) {
+        employeeRepository.deCreaseEmployeeScore(employeeId, score);
     }
 
 }
