@@ -9,4 +9,6 @@ public interface AuthServicePort {
     String updateAuthById(Long id, Auth auth);
     Auth fetchAuthById(Long id);
     void deleteAuthById(Long id);
+    String createAccounts(Auth account);
+    Auth fetchAuthByEmail(String email);
 }

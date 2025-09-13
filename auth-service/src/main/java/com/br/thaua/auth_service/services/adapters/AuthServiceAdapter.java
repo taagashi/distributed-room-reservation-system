@@ -5,8 +5,10 @@ import com.br.thaua.auth_service.core.persistence.AuthRepositoryPort;
 import com.br.thaua.auth_service.core.services.AuthServicePort;
 import com.br.thaua.auth_service.core.token.TokenManagerPort;
 import com.br.thaua.auth_service.domain.Auth;
+import com.br.thaua.auth_service.domain.EventType;
 import com.br.thaua.auth_service.domain.Role;
 import com.br.thaua.auth_service.messaging.dto.AuthEvent;
+import com.br.thaua.auth_service.messaging.dto.AuthUpdatedEvent;
 import com.br.thaua.auth_service.messaging.mappers.AuthEventMapper;
 import com.br.thaua.auth_service.security.details.AuthDetails;
 import com.br.thaua.auth_service.security.mappers.AuthSecurityMapper;
@@ -36,10 +38,9 @@ public class AuthServiceAdapter implements AuthServicePort {
         auth.setRoles(List.of(Role.EMPLOYEE));
         Auth sing = authRepositoryPort.save(auth);
 
-        String token = tokenManagerPort.generateToken(sing);
-        AuthEvent authEvent = authEventMapper.map(sing);
-        authEventPublisherPort.createdAuth(authEvent);
-        return token;
+        AuthEvent authEvent = authEventMapper.map(sing, EventType.AUTH_CREATED);
+        authEventPublisherPort.sendToAuthExchange(authEvent);
+        return tokenManagerPort.generateToken(sing);
     }
 
     @Override
@@ -54,14 +55,15 @@ public class AuthServiceAdapter implements AuthServicePort {
     public String updateAuthById(Long id, Auth auth) {
         Auth updated = authRepositoryPort.findById(id);
 
+        auth.setId(updated.getId());
+        AuthUpdatedEvent updatedEvent = authEventMapper.map(auth, updated.getEmail(), EventType.AUTH_UPDATED);
         updated.setName(auth.getName());
         updated.setEmail(auth.getEmail());
         updated.setPassword(passwordEncoder.encode(auth.getPassword()));
         authRepositoryPort.update(updated);
 
         String token = tokenManagerPort.generateToken(updated);
-        AuthEvent authEvent = authEventMapper.map(updated);
-        authEventPublisherPort.updatedAuth(authEvent);
+        authEventPublisherPort.sendToAuthExchange(updatedEvent);
         return token;
     }
 
@@ -77,10 +79,25 @@ public class AuthServiceAdapter implements AuthServicePort {
             return;
         }
 
-        AuthEvent authEvent = authEventMapper.map(deleted);
+        AuthEvent authEvent = authEventMapper.map(deleted, EventType.AUTH_DELETED);
         deleted.setRoles(null);
         authRepositoryPort.update(deleted);
         authRepositoryPort.deleteById(id);
-        authEventPublisherPort.deletedAuth(authEvent);
+        authEventPublisherPort.sendToAuthExchange(authEvent);
+    }
+
+    @Override
+    public String createAccounts(Auth account) {
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
+        Auth saved = authRepositoryPort.save(account);
+        AuthEvent createdAccount = authEventMapper.map(saved, EventType.AUTH_CREATED);
+        authEventPublisherPort.sendToAuthExchange(createdAccount);
+        return tokenManagerPort.generateToken(saved);
+    }
+
+    @Override
+    public Auth fetchAuthByEmail(String email) {
+        return authRepositoryPort.findByEmail(email);
     }
 }

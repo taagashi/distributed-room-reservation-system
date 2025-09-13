@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum Role {
     EMPLOYEE(1L),
-    ADMIN(2L);
+    ADMIN(2L),
+    ROOT(3L);
 
     private final Long id;
 }

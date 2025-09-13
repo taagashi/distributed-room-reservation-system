@@ -14,30 +14,21 @@ public class RabbitConfig {
     @Value("${exchange.auth.name}")
     private String exchangeAuth;
 
-    @Value("${routing.key.auth.deleted}")
-    private String routingKeyDeletedAuth;
-
-    @Value("${routing.key.auth.created}")
-    private String routingKeyCreatedAuth;
-
-    @Value("${routing.key.auth.updated}")
-    private String routingKeyUpdatedAuth;
+    @Value("${routing.key.auth}")
+    private String routingKeyAuth;
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter());
+        rabbitTemplate.setExchange(exchangeAuth);
+        rabbitTemplate.setRoutingKey(routingKeyAuth);
         return rabbitTemplate;
     }
 
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
-    }
-
-    @Bean
-    public TopicExchange directExchange() {
-        return new TopicExchange(exchangeAuth);
     }
 
 }

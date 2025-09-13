@@ -1,15 +1,10 @@
 package com.br.thaua.auth_service.filters;
 
-import ch.qos.logback.core.util.SimpleInvocationGate;
-import com.br.thaua.auth_service.domain.Role;
 import com.br.thaua.auth_service.http.dto.gateway.AuthGatewayRequest;
-import com.br.thaua.auth_service.security.details.AuthDetails;
-import com.sun.net.httpserver.Headers;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.hc.client5.http.entity.mime.Header;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Stream;
 

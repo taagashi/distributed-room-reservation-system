@@ -5,6 +5,7 @@ import com.br.thaua.auth_service.domain.Auth;
 import com.br.thaua.auth_service.http.dto.AuthRequestLogin;
 import com.br.thaua.auth_service.http.dto.AuthRequestSingIn;
 import com.br.thaua.auth_service.http.dto.AuthResponse;
+import com.br.thaua.auth_service.http.dto.AuthRootCreateAccountRequest;
 import com.br.thaua.auth_service.http.dto.gateway.AuthGatewayRequest;
 import com.br.thaua.auth_service.http.mappers.AuthDtoMappers;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,12 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping("/root/create-accounts")
+    public ResponseEntity<String> createAccounts(@RequestBody AuthRootCreateAccountRequest authRootCreateAccountRequest) {
+        Auth account = authDtoMappers.map(authRootCreateAccountRequest);
+        return ResponseEntity.ok(authServicePort.createAccounts(account));
+    }
+
     @PutMapping("/update")
     public ResponseEntity<String> updateAccount(@RequestBody AuthRequestSingIn authRequestSingIn) {
         Auth updated = authDtoMappers.map(authRequestSingIn);
@@ -50,6 +57,11 @@ public class AuthController {
         AuthGatewayRequest authGatewayRequest = extractCurrentUser();
         authServicePort.deleteAuthById(authGatewayRequest.id());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/email")
+    public ResponseEntity<AuthResponse> getAuth(@RequestParam String email) {
+        return ResponseEntity.ok(authDtoMappers.map(authServicePort.fetchAuthByEmail(email)));
     }
 
     private AuthGatewayRequest extractCurrentUser() {

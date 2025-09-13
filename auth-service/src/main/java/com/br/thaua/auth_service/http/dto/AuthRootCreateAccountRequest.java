@@ -1,4 +1,5 @@
 package com.br.thaua.auth_service.http.dto;
 
-public record AuthRootCreateAccountRequest() {
-}
+import java.util.List;
+
+public record AuthRootCreateAccountRequest(String name, String email, String password, List<String> roles) {}

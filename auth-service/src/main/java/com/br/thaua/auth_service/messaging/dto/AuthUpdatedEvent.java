@@ -1,4 +1,6 @@
 package com.br.thaua.auth_service.messaging.dto;
 
-public class AuthUpdatedEvent {
+import com.br.thaua.auth_service.domain.EventType;
+
+public record AuthUpdatedEvent(EventType eventType, Long id, String email, String oldEmail) {
 }

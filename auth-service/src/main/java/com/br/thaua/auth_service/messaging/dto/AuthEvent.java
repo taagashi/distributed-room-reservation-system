@@ -1,3 +1,5 @@
 package com.br.thaua.auth_service.messaging.dto;
 
-public record AuthEvent(Long id, String email) {}
+import com.br.thaua.auth_service.domain.EventType;
+
+public record AuthEvent(EventType eventType, Long id, String email) {}
