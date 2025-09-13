@@ -1,13 +1,14 @@
 package com.br.thaua.employee_service.http.controllers;
 
-import com.br.thaua.employee_service.domain.Employee;
-import com.br.thaua.employee_service.http.dto.EmployeeRequest;
-import com.br.thaua.employee_service.http.dto.EmployeeResponse;
+import com.br.thaua.employee_service.http.dto.*;
 import com.br.thaua.employee_service.core.services.EmployeeServicePort;
 import com.br.thaua.employee_service.http.mappers.EmployeeDtoMapper;
+import com.br.thaua.employee_service.http.mappers.FeedbackDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/employee")
@@ -15,31 +16,56 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
     private final EmployeeServicePort employeeServicePort;
     private final EmployeeDtoMapper employeeDtoMapper;
+    private final FeedbackDtoMapper feedbackDtoMapper;
 
-    @PostMapping
-    public ResponseEntity<EmployeeResponse> addNewEmployee(@RequestBody EmployeeRequest employeeRequest) {
-        Employee employee = employeeDtoMapper.map(employeeRequest);
-        EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.addNewEmployee(employee));
-        return ResponseEntity.ok(employeeResponse);
+    @PostMapping("/{employeeId}/feedBack")
+    public ResponseEntity<FeedBackResponse> addFeedBackForEmployeeId(@PathVariable Long employeeId, @RequestBody FeedBackRequest feedbackRequest) {
+        GatewayRequest currentUser = fetchCurrentUser();
+        FeedBackResponse feedBack = feedbackDtoMapper.map(employeeServicePort.addFeedBack(feedbackDtoMapper.map(feedbackRequest), currentUser.id(), employeeId));
+        return ResponseEntity.ok(feedBack);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> fetchEmployeeById(@PathVariable Long id) {
-        EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.fetchEmployeeById(id));
-        return ResponseEntity.ok(employeeResponse);
+    @GetMapping("/view-profile")
+    public ResponseEntity<EmployeeResponse> viewProfile() {
+        GatewayRequest currentUser = fetchCurrentUser();
+        EmployeeResponse employee = employeeDtoMapper.map(employeeServicePort.fetchEmployee(currentUser.id()));
+        return ResponseEntity.ok(employee);
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<EmployeeResponse> updateEmployeeById(@PathVariable Long id, @RequestBody EmployeeRequest employeeRequest) {
-        Employee employee = employeeDtoMapper.map(employeeRequest);
-        EmployeeResponse employeeResponse = employeeDtoMapper.map(employeeServicePort.updateEmployeeById(id, employee));
-        return ResponseEntity.ok(employeeResponse);
+    @GetMapping("/feedBack")
+    public ResponseEntity<List<FeedBackResponse>> getFeedBacksReceived() {
+        GatewayRequest currentUser = fetchCurrentUser();
+        List<FeedBackResponse> feedBack = employeeServicePort.listFeedBacksReceived(currentUser.id()).stream().map(feedbackDtoMapper::map).toList();
+        return ResponseEntity.ok(feedBack);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteEmployeeById(@PathVariable Long id) {
-        employeeServicePort.deleteEmployeeById(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{employeeId}/feedBack")
+    public ResponseEntity<List<FeedBackResponse>> getFeedBacksOfEmployee(@PathVariable Long employeeId) {
+        List<FeedBackResponse> feedBack = employeeServicePort.listFeedBacksOfEmployee(employeeId).stream().map(feedbackDtoMapper::map).toList();
+        return ResponseEntity.ok(feedBack);
+    }
+
+    @GetMapping("/{employeeId}/feedBack/received")
+    public ResponseEntity<List<FeedBackResponse>> getFeedBacksReceivedOfEmployee(@PathVariable Long employeeId) {
+        List<FeedBackResponse> feedBack = employeeServicePort.listFeedBacksReceived(employeeId).stream().map(feedbackDtoMapper::map).toList();
+        return ResponseEntity.ok(feedBack);
+    }
+
+    @PutMapping("/feedBack/{feedBackId}")
+    public ResponseEntity<FeedBackResponse> updateFeedBack(@PathVariable Long feedBackId, @RequestBody FeedBackRequest feedBackRequest) {
+        GatewayRequest currentUser = fetchCurrentUser();
+        FeedBackResponse feedBack = feedbackDtoMapper.map(employeeServicePort.updateFeedBack(feedBackId, currentUser.id(), feedbackDtoMapper.map(feedBackRequest)));
+        return ResponseEntity.ok(feedBack);
+    }
+
+    @DeleteMapping("/feedBack/{feedBackId}")
+    public void deleteFeedBack(@PathVariable  Long feedBackId) {
+        GatewayRequest currentUser = fetchCurrentUser();
+        employeeServicePort.deleteFeedBack(feedBackId, currentUser.id());
+    }
+
+    private GatewayRequest fetchCurrentUser() {
+        return new GatewayRequest(1L, "thaua", "gabrielthaua13@gmail.com", List.of());
     }
 
 }
