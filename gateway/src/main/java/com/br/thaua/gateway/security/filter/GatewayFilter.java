@@ -2,7 +2,6 @@ package com.br.thaua.gateway.security.filter;
 
 import com.br.thaua.gateway.core.cache.GatewayCachePort;
 import com.br.thaua.gateway.core.token.TokenManager;
-import com.br.thaua.gateway.domain.Auth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -29,26 +28,21 @@ public class GatewayFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        log.info("ENTROU NO FILTRO");
         ServerHttpRequest request = exchange.getRequest();
         String authorization = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         String token = null;
 
         if(authorization != null && authorization.startsWith("Bearer ")) {
             token = authorization.substring(7);
-            log.info("AUTHORIZATION NAO EH NULO E COMEA COM BEARER");
         }
 
-        log.info("AUTHORIZATION EH NULO");
-
         if(token != null && tokenManager.validateToken(token)) {
-            log.info("VALIDANDO TOKEN");
-            String id = tokenManager.extractId(token).toString();
+            Long id = tokenManager.extractId(token);
             String name = tokenManager.extractName(token);
             String email = tokenManager.extractEmail(token);
             List<String> roles = tokenManager.extractRoles(token);
 
-            if(gatewayCachePort.getCacheGateway(generateKeyForGatewayCache(id)) != null) {
+            if(gatewayCachePort.getCacheGateway(generateKeyForGatewayCache(id)) != null || gatewayCachePort.getCacheGateway(generateKeyForGatewayCache(email)) != null) {
                 ServerHttpResponse response = exchange.getResponse();
                 response.setStatusCode(HttpStatusCode.valueOf(401));
                 exchange = exchange.mutate().response(response).build();
@@ -56,7 +50,7 @@ public class GatewayFilter implements WebFilter {
             }
 
             ServerHttpRequest mutatedRequest = request.mutate()
-                    .header("x-user-id", id)
+                    .header("x-user-id", String.valueOf(id))
                     .header("x-user-name", name)
                     .header("x-user-email", email)
                     .header("x-user-roles", String.join(",", roles))
@@ -77,8 +71,10 @@ public class GatewayFilter implements WebFilter {
         return chain.filter(exchange);
     }
 
-    private String generateKeyForGatewayCache(String id) {
+    private String generateKeyForGatewayCache(Long id) {
         return "revoked:" + id;
     }
+
+    private String generateKeyForGatewayCache(String email) {return "revoked:" + email;}
 
 }

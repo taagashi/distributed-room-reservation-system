@@ -18,12 +18,25 @@ public class GatewayRedisCacheAdapter implements GatewayCachePort {
     }
 
     @Override
-    public void putCacheGateway(String key, Object value) {
-        redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(30));
+    public void putCacheGatewayIdKey(Long id, Object value) {
+        redisTemplate.opsForValue().set(revokedAuthByIdKey(id), value, Duration.ofMinutes(30));
+    }
+
+    @Override
+    public void putCacheGatewayEmailKey(String email, Object value) {
+        redisTemplate.opsForValue().set(revokedAuthByEmailKey(email), value, Duration.ofMinutes(30));
     }
 
     @Override
     public void evictCacheGateway(String key) {
         redisTemplate.delete(key);
+    }
+
+    private String revokedAuthByIdKey(Long id) {
+        return "revoked:" + id;
+    }
+
+    private String revokedAuthByEmailKey(String email) {
+        return "revoked:" + email;
     }
 }

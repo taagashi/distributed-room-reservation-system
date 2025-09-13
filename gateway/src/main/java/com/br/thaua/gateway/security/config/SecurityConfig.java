@@ -23,12 +23,13 @@ public class SecurityConfig {
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .addFilterBefore(gatewayFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchange -> exchange
+//                        .pathMatchers("/api/v1/reservation/**").authenticated()
                         .pathMatchers("/api/v1/auth/delete/**").authenticated()
                         .pathMatchers("/api/v1/auth/account/**").authenticated()
                         .pathMatchers("/api/v1/auth/update/**").authenticated()
                         .pathMatchers("/api/v1/employee/**").hasRole("EMPLOYEE")
-                        .pathMatchers("/api/v1/reservation/**").hasRole("EMPLOYEE")
                         .pathMatchers("/api/v1/room/**").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/auth/root/create-accounts").hasRole("ROOT")
                         .anyExchange().permitAll()
                 )
                 .build();

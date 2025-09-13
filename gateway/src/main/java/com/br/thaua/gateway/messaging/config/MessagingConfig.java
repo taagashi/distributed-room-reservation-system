@@ -3,8 +3,8 @@ package com.br.thaua.gateway.messaging.config;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class MessagingConfig {
     @Value("${exchange.auth.name}")
     private String exchangeAuth;
-
-    @Value("${routing.key.auth.deleted}")
-    private String routingKeyDeletedAuth;
 
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListener(ConnectionFactory connectionFactory) {
@@ -27,21 +24,21 @@ public class MessagingConfig {
 
     @Bean
     public MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        return new SimpleMessageConverter();
     }
 
     @Bean
-    public TopicExchange directExchange() {
+    public TopicExchange topicExchange() {
         return new TopicExchange(exchangeAuth);
     }
 
     @Bean
-    public Queue deletedAuthQueue() {
-        return new Queue("gateway.auth.deleted.queue");
+    public Queue authQueue() {
+        return new Queue("gateway.auth.queue");
     }
 
     @Bean
     public Binding deletedAuthBinding() {
-        return BindingBuilder.bind(deletedAuthQueue()).to(directExchange()).with("auth.deleted");
+        return BindingBuilder.bind(authQueue()).to(topicExchange()).with("auth.*");
     }
 }
