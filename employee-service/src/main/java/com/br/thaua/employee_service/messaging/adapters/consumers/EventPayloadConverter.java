@@ -1,5 +1,6 @@
 package com.br.thaua.employee_service.messaging.adapters.consumers;
 
+import com.br.thaua.employee_service.domain.EventType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,13 @@ public class EventPayloadConverter {
 
     public <T> T fetchEventClass(Class <T> eventClazz, JsonNode node) {
         try {
-            objectMapper.treeToValue(node, eventClazz);
+            return  objectMapper.treeToValue(node, eventClazz);
         } catch (Exception e) {
             return null;
         }
-        return null;
+    }
+
+    public EventType fetchEventType(JsonNode node) {
+        return EventType.valueOf(node.get("eventType").asText());
     }
 }
