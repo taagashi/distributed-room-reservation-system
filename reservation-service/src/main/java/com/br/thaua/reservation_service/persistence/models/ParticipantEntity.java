@@ -9,7 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity(name = "participant_tb")
+@Entity
+@Table(name = "participant_tb")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParticipantEntity {

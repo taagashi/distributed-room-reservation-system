@@ -13,7 +13,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity(name = "reservation_tb")
+@Entity
+@Table(name = "reservation_tb")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationEntity {

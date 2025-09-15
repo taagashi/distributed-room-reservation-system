@@ -54,7 +54,7 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
     List<ParticipantEntity> findAllByCheackinAndReservationId(boolean cheackin, Long reservationId);
 
     @Query("""
-            SELECT p FROM Participant p
+            SELECT p FROM ParticipantEntity p
             WHERE p.reservation.id = ?1
             """)
     List<ParticipantEntity> findAllByReservationId(Long reservationId);
