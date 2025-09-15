@@ -2,41 +2,21 @@ services:
   auth-service:
     build: ./auth-service
     container_name: auth-service
-    environment:
-      EUREKA_URL: http://eureka:8761/eureka
-      SPRING_DATASOURCE_AUTH_URL: jdbc:postgresql://postgres-auth:5432/auth_db
-      SPRING_SERVICES_USERNAME: admin
-      SPRING_SERVICES_PASSWORD: admin123
-      PRIVATE_KEY_VALUE: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC9fAkpJB85+oX4/PGYG1EL0Nvar/M/AN5iNAgkgsHTHV8GXGl/I96XUfbp0C31wJqj+wi1zn8/kf4+9k2UjgSNOoSzYpvs0g11s0C72QdVpVT07EBkKQV7bbcBqxIfwEk/1q9dJRorXa+yHAidVEQbf4BkmuVLF57XbAxDSuBftJA4nxmpDr6LB5wbDo2NgB02iHpkFRyjBxDF9i4UBB/BezJ6KXtwO1H3jvL+DAn97zroZUj47Upx1Bstn9tN14gdRb7GpUs3fWpwWfM3iOcKBkgreh7Shjkmu5G4hlcIVWlyZkZw7mc1FQLc9I9MdGGXv2DV+e1j2fvZVLZg7vKlAgMBAAECggEABsAe/NsD8X4M/NBY9HteXd1TVqilVnbE9W0b1N5MhwDSXp1uEHDX6ZoGAdFt53OigQMvIAptMa6nmTR9SOuAUZUmnq9rTDqjN/nhWya4kBnDaUc0ig87x9YiSpNH2Tq605vl35u0IXfOeae3BNomLQIKxG9ZHEtkoVqAtsQnVzF0d0UXgwcY0a7szo25NGIIXUJ8iOP96zkyYqNUDqZ1JY+S5zXeLR/K6d3+OWN9ph+mjcKMWg1enLzkDiWdJIoXuKqqemrBX5xvxJUFZ5+ppNZfsFxNfJ3Jh8ma2mwJrJgyEMmXSDOszaLDUf3Y05lJaaWfkagqTi15Qz5Ak/ZR9wKBgQDy3nTbBUbs8tZ5ses11UNUXBuBB3BMTsBDx212hzUwQspAUxBaUHsqbho00ZouGl/d6V/otKQ4THuRncxgXlvJPDSpcwMitlyBqqZk58OvCAPPtWUFlFdqLRqmLjpH1nfoOypQP0kde34qEIBoD4fwExlt4fxGd161eisAnapX3wKBgQDHuq+1NXb2t9ZTOJ/LPl0EU+AB6X8z3Tw7QvAFdLVE8D6g0at66Mo+3b6yalD+CfdHyhsI2CZxoMKMcJb6ifDltmE5/IJ8U+mdK1XHVc0liFD3ZdkPhkzF078ovES73W23/l+YzFhi6tQm0rNsXjBSJqd13PyJRh4vImLU6vqV+wKBgD4N2tuvUHzwWx6C+C8sC2T9l8VzCh1lLbjjtrNHPq7TEew3jQEWeTHRKf7+4x8OfBouK+RAa4k6+YOuRu8EjP0w1d/J1C5FXAOBf7xef2A0cwzaMzKmwWMOnTWCsD90q/R5UYlpchwHVqgWyUhNV5Veu+uYhyXWECvcSCqDHmgPAoGACGJGw+WFo9+dqIqk8oQgpXDb41io1UWBJL+vkZsPjOBE0L1cZGFnM/Jc8eJSmgdTEPlj3yArpPNplzmWrNejfBEGzcdStuNS2B0ckayBWwT42Rm2Xdd2W4uC57PXcsddtq5/1sslHqna0/JeQ7tEbf5fYywukZiW5cWcvnFKqYcCgYBF5b3g8ndY+/uzeRk2rE99nTB732xbgydLL8DGGd0pQPTMyKXNLXXGouFkOfewEORMZKaxwJMMMmIyPrdnnS54R5jvZaXOa5FEmcdm/+RobAZYiPY4poecTP/fQcGtwEJE5P8jBIzQo7TokdFhYWXMj1FD2WgnQhj76zrQlL9Yig==
-      PUBLIC_KEY_VALUE: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXwJKSQfOfqF+PzxmBtRC9Db2q/zPwDeYjQIJILB0x1fBlxpfyPel1H26dAt9cCao/sItc5/P5H+PvZNlI4EjTqEs2Kb7NINdbNAu9kHVaVU9OxAZCkFe223AasSH8BJP9avXSUaK12vshwInVREG3+AZJrlSxee12wMQ0rgX7SQOJ8ZqQ6+iwecGw6NjYAdNoh6ZBUcowcQxfYuFAQfwXsyeil7cDtR947y/gwJ/e866GVI+O1KcdQbLZ/bTdeIHUW+xqVLN31qcFnzN4jnCgZIK3oe0oY5JruRuIZXCFVpcmZGcO5nNRUC3PSPTHRhl79g1fntY9n72VS2YO7ypQIDAQAB
+    env_file:
+      - ./env/auth.env
     depends_on:
       - eureka
       - postgres-auth
       - gateway
+      - rabbitmq
     ports:
-      - "8085:8085"
+      - "8085:8080"
 
   reservation-service:
     build: ./reservation-service
     container_name: reservation-service
-    environment:
-      EUREKA_URL: http://eureka:8761/eureka
-      SPRING_DATASOURCE_RESERVATION_URL: jdbc:postgresql://postgres-reservation:5432/reservation_db
-      SPRING_SERVICES_USERNAME: admin
-      SPRING_SERVICES_PASSWORD: admin123
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      ROUTING_KEY_EMPLOYEE_CREATED: employee.created
-      ROUTING_KEY_EMPLOYEE_UPDATED: employee.update
-      ROUTING_KEY_EMPLOYEE_DELETED: employee.deleted
-      EXCHANGE_EMPLOYEE_NAME: employee.exchange
-      ROUTING_KEY_ROOM_CREATED: room.created
-      ROUTING_KEY_ROOM_UPDATED: room.update
-      ROUTING_KEY_ROOM_DELETED: room.deleted
-      EXCHANGE_ROOM_NAME: room.exchange
-      SPRING_REDIS_RESERVATION_HOST: redis
-      SPRING_REDIS_RESERVATION_PORT: 6379
-      SPRING_REDIS_TIMEOUT: 60000
+    env_file:
+      ./env/reservation.env
     depends_on:
       - eureka
       - rabbitmq
@@ -45,63 +25,38 @@ services:
       - room-service
       - postgres-reservation
     ports:
-      - "8081:8081"
+      - "8081:8080"
 
 
   employee-service:
     build: ./employee-service
     container_name: employee-service
-    environment:
-      EUREKA_URL: http://eureka:8761/eureka
-      SPRING_DATASOURCE_EMPLOYEE_URL: jdbc:postgresql://postgres-employee:5432/employee_db
-      SPRING_SERVICES_USERNAME: admin
-      SPRING_SERVICES_PASSWORD: admin123
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      ROUTING_KEY_EMPLOYEE_CREATED: employee.created
-      ROUTING_KEY_EMPLOYEE_UPDATED: employee.update
-      ROUTING_KEY_EMPLOYEE_DELETED: employee.deleted
-      EXCHANGE_EMPLOYEE_NAME: employee.exchange
+    env_file:
+      ./env/employee.env
     depends_on:
       - eureka
       - rabbitmq
       - postgres-employee
     ports:
-      - "8082:8082"
+      - "8082:8080"
   
   room-service:
     build: ./room-service
     container_name: room-service
-    environment:
-      EUREKA_URL: http://eureka:8761/eureka
-      SPRING_DATASOURCE_ROOM_URL: jdbc:postgresql://postgres-room:5432/room_db
-      SPRING_SERVICES_USERNAME: admin
-      SPRING_SERVICES_PASSWORD: admin123
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      ROUTING_KEY_ROOM_CREATED: room.created
-      ROUTING_KEY_ROOM_UPDATED: room.update
-      ROUTING_KEY_ROOM_DELETED: room.deleted
-      EXCHANGE_ROOM_NAME: room.exchange
+    env_file:
+      ./env/room.env
     depends_on:
       - eureka
       - rabbitmq
       - postgres-room
     ports:
-      - "8083:8083"
+      - "8083:8080"
 
   gateway:
     build: ./gateway
     container_name: gateway
-    environment:
-      EUREKA_URL: http://eureka:8761/eureka
-      SPRING_REDIS_GATEWAY_HOST: redis-gateway
-      SPRING_REDIS_GATEWAY_PORT: 6380
-      SPRING_REDIS_GATEWAY_TIMEOUT: 60000
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      PRIVATE_KEY_VALUE: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC9fAkpJB85+oX4/PGYG1EL0Nvar/M/AN5iNAgkgsHTHV8GXGl/I96XUfbp0C31wJqj+wi1zn8/kf4+9k2UjgSNOoSzYpvs0g11s0C72QdVpVT07EBkKQV7bbcBqxIfwEk/1q9dJRorXa+yHAidVEQbf4BkmuVLF57XbAxDSuBftJA4nxmpDr6LB5wbDo2NgB02iHpkFRyjBxDF9i4UBB/BezJ6KXtwO1H3jvL+DAn97zroZUj47Upx1Bstn9tN14gdRb7GpUs3fWpwWfM3iOcKBkgreh7Shjkmu5G4hlcIVWlyZkZw7mc1FQLc9I9MdGGXv2DV+e1j2fvZVLZg7vKlAgMBAAECggEABsAe/NsD8X4M/NBY9HteXd1TVqilVnbE9W0b1N5MhwDSXp1uEHDX6ZoGAdFt53OigQMvIAptMa6nmTR9SOuAUZUmnq9rTDqjN/nhWya4kBnDaUc0ig87x9YiSpNH2Tq605vl35u0IXfOeae3BNomLQIKxG9ZHEtkoVqAtsQnVzF0d0UXgwcY0a7szo25NGIIXUJ8iOP96zkyYqNUDqZ1JY+S5zXeLR/K6d3+OWN9ph+mjcKMWg1enLzkDiWdJIoXuKqqemrBX5xvxJUFZ5+ppNZfsFxNfJ3Jh8ma2mwJrJgyEMmXSDOszaLDUf3Y05lJaaWfkagqTi15Qz5Ak/ZR9wKBgQDy3nTbBUbs8tZ5ses11UNUXBuBB3BMTsBDx212hzUwQspAUxBaUHsqbho00ZouGl/d6V/otKQ4THuRncxgXlvJPDSpcwMitlyBqqZk58OvCAPPtWUFlFdqLRqmLjpH1nfoOypQP0kde34qEIBoD4fwExlt4fxGd161eisAnapX3wKBgQDHuq+1NXb2t9ZTOJ/LPl0EU+AB6X8z3Tw7QvAFdLVE8D6g0at66Mo+3b6yalD+CfdHyhsI2CZxoMKMcJb6ifDltmE5/IJ8U+mdK1XHVc0liFD3ZdkPhkzF078ovES73W23/l+YzFhi6tQm0rNsXjBSJqd13PyJRh4vImLU6vqV+wKBgD4N2tuvUHzwWx6C+C8sC2T9l8VzCh1lLbjjtrNHPq7TEew3jQEWeTHRKf7+4x8OfBouK+RAa4k6+YOuRu8EjP0w1d/J1C5FXAOBf7xef2A0cwzaMzKmwWMOnTWCsD90q/R5UYlpchwHVqgWyUhNV5Veu+uYhyXWECvcSCqDHmgPAoGACGJGw+WFo9+dqIqk8oQgpXDb41io1UWBJL+vkZsPjOBE0L1cZGFnM/Jc8eJSmgdTEPlj3yArpPNplzmWrNejfBEGzcdStuNS2B0ckayBWwT42Rm2Xdd2W4uC57PXcsddtq5/1sslHqna0/JeQ7tEbf5fYywukZiW5cWcvnFKqYcCgYBF5b3g8ndY+/uzeRk2rE99nTB732xbgydLL8DGGd0pQPTMyKXNLXXGouFkOfewEORMZKaxwJMMMmIyPrdnnS54R5jvZaXOa5FEmcdm/+RobAZYiPY4poecTP/fQcGtwEJE5P8jBIzQo7TokdFhYWXMj1FD2WgnQhj76zrQlL9Yig==
-      PUBLIC_KEY_VALUE: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXwJKSQfOfqF+PzxmBtRC9Db2q/zPwDeYjQIJILB0x1fBlxpfyPel1H26dAt9cCao/sItc5/P5H+PvZNlI4EjTqEs2Kb7NINdbNAu9kHVaVU9OxAZCkFe223AasSH8BJP9avXSUaK12vshwInVREG3+AZJrlSxee12wMQ0rgX7SQOJ8ZqQ6+iwecGw6NjYAdNoh6ZBUcowcQxfYuFAQfwXsyeil7cDtR947y/gwJ/e866GVI+O1KcdQbLZ/bTdeIHUW+xqVLN31qcFnzN4jnCgZIK3oe0oY5JruRuIZXCFVpcmZGcO5nNRUC3PSPTHRhl79g1fntY9n72VS2YO7ypQIDAQAB
+    env_file:
+      ./env/gateway.env
     depends_on:
       - eureka
       - redis-gateway
@@ -137,6 +92,9 @@ services:
   redis-gateway:
     image: redis
     container_name: redis-gateway
+
+    depends_on:
+      - rabbitmq
     ports:
       - "6380:6379"
     volumes:
