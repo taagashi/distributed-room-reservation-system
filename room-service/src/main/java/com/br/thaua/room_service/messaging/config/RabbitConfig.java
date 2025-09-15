@@ -27,8 +27,8 @@ public class RabbitConfig {
     public String routingKeyReservation;
 
     @Bean
-    public TopicExchange roomExchange() {
-        return new TopicExchange(exchangeRoomName);
+    public DirectExchange roomExchange() {
+        return new DirectExchange(exchangeRoomName);
     }
 
     @Bean
@@ -67,6 +67,7 @@ public class RabbitConfig {
     public DirectExchange directExchange() {
         return new DirectExchange(exchangeReservationName);
     }
+
     @Bean
     public Binding binding() {
         return BindingBuilder.bind(reservationQueue()).to(directExchange()).with(routingKeyReservation);

@@ -25,6 +25,12 @@ public class RabbitConfig {
     @Value("${routing.key.reservation}")
     private String routingKeyReservation;
 
+    @Value("${routing.key.room}")
+    private String routingKeyRoom;
+
+    @Value("${routing.key.auth}")
+    private String routingKeyAuth;
+
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -54,8 +60,8 @@ public class RabbitConfig {
     }
 
     @Bean
-    public TopicExchange topicAuthExchange() {
-        return new TopicExchange(exchangeAuth);
+    public DirectExchange directAuthExchange() {
+        return new DirectExchange(exchangeAuth);
     }
 
     @Bean
@@ -65,12 +71,12 @@ public class RabbitConfig {
 
     @Bean
     public Binding authBinding() {
-        return BindingBuilder.bind(authQueue()).to(topicAuthExchange()).with("auth.*");
+        return BindingBuilder.bind(authQueue()).to(directAuthExchange()).with(routingKeyAuth);
     }
 
     @Bean
-    public TopicExchange topicRoomExchange() {
-        return new TopicExchange(exchangeRoom);
+    public DirectExchange directRoomExchange() {
+        return new DirectExchange(exchangeRoom);
     }
 
     @Bean
@@ -80,7 +86,7 @@ public class RabbitConfig {
 
     @Bean
     public Binding createdRoomBinding() {
-        return BindingBuilder.bind(roomQueue()).to(topicRoomExchange()).with("room.*");
+        return BindingBuilder.bind(roomQueue()).to(directRoomExchange()).with(routingKeyRoom);
     }
 
 }

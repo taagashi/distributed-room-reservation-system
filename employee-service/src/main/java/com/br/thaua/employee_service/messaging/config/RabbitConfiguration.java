@@ -1,9 +1,6 @@
 package com.br.thaua.employee_service.messaging.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -39,18 +36,18 @@ public class RabbitConfiguration {
     private String routingKeyRoom;
 
     @Bean
-    public TopicExchange authExchange() {
-        return new TopicExchange(exchangeAuth);
+    public DirectExchange authExchange() {
+        return new DirectExchange(exchangeAuth);
     }
 
     @Bean
-    public TopicExchange reservationExchange() {
-        return new TopicExchange(exchangeReservation);
+    public DirectExchange reservationExchange() {
+        return new DirectExchange(exchangeReservation);
     }
 
     @Bean
-    public TopicExchange roomExchange() {
-        return new TopicExchange(exchangeRoom);
+    public DirectExchange roomExchange() {
+        return new DirectExchange(exchangeRoom);
     }
 
 

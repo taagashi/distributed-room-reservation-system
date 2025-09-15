@@ -59,13 +59,13 @@ public class AuthRabbitEventConsumerAdapter implements AuthEventConsumerPort {
         authCachePort.evictAuthEmailKey(authUpdated.oldEmail());
         authCachePort.updateCacheAuthEmailKey(authEventMapper.map(authUpdated));
 
-        participantRepositoryPort.updateEmailByAuthId(authUpdated.id(), authUpdated.email());
+        participantRepositoryPort.updateEmailByAuthId(authUpdated.authId(), authUpdated.email());
     }
 
     private void authDeletedEvent(AuthEventConsumer authDeleted) {
         authCachePort.evictAuthEmailKey(authDeleted.email());
 
-        participantRepositoryPort.deleteAllByAuthId(authDeleted.id());
+        participantRepositoryPort.deleteAllByAuthId(authDeleted.authId());
     }
 
     private JsonNode fetchJsonNode(String event) throws JsonProcessingException {
