@@ -45,7 +45,7 @@ public class AuthRabbitEventConsumerAdapter implements AuthEventConsumerPort {
     }
 
     private void authDeletedEvent(AuthEvent authDeleted) {
-        gatewayCachePort.putCacheGatewayIdKey(authDeleted.id(), authDeleted);
+        gatewayCachePort.putCacheGatewayIdKey(authDeleted.authId(), authDeleted);
     }
 
     private void authUpdatedEvent(AuthUpdatedEvent authUpdated) {

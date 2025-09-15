@@ -14,6 +14,9 @@ public class MessagingConfig {
     @Value("${exchange.auth.name}")
     private String exchangeAuth;
 
+    @Value("${routing.key.auth}")
+    private String routingKetAuth;
+
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListener(ConnectionFactory connectionFactory) {
             SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
@@ -28,8 +31,8 @@ public class MessagingConfig {
     }
 
     @Bean
-    public TopicExchange topicExchange() {
-        return new TopicExchange(exchangeAuth);
+    public DirectExchange directExchange() {
+        return new DirectExchange(exchangeAuth);
     }
 
     @Bean
@@ -39,6 +42,6 @@ public class MessagingConfig {
 
     @Bean
     public Binding deletedAuthBinding() {
-        return BindingBuilder.bind(authQueue()).to(topicExchange()).with("auth.*");
+        return BindingBuilder.bind(authQueue()).to(directExchange()).with(routingKetAuth);
     }
 }
