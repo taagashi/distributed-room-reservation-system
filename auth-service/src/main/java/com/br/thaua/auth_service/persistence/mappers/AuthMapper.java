@@ -29,7 +29,7 @@ public interface AuthMapper {
             return null;
         }
         return roleEntityList.stream()
-                .map(role -> Role.valueOf(role.getRole()))
+                .map(role -> Role.fromId(role.getId()))
                 .toList();
     }
 
